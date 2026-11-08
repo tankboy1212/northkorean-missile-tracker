@@ -2,7 +2,7 @@
 
 An interactive map + timeline of North Korean missile launches since 1998, built as a single self-contained HTML page (D3.js v7). Light/dark mode and English / Korean(한국어) / Japanese(日本語) interface switching are built in.
 
-**▶ Live site:** `https://<your-username>.github.io/<repo-name>/` (enable GitHub Pages — see below)
+**▶ Live site:** `https://tankboy1212.github.io/northkorean-missile-tracker/` 
 
 ![screenshot](docs/screenshot.png)
 
