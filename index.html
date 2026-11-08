@@ -120,12 +120,12 @@ header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;
 .eyebrow{font:500 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
 h1{font:900 clamp(28px,4vw,46px)/1.02 var(--f-display);letter-spacing:-.015em;margin:0;text-wrap:balance}
 h1 em{font-style:normal;color:var(--inside)}
-h2{font:600 26px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.02em;margin:0}
+h2{font:600 13px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.02em;margin:0}
 h3{font:700 13.5px/1.3 var(--f-body);letter-spacing:.005em;margin:0;color:var(--ink-2)}
 
 .stage{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:0;border:1px solid var(--rule);background:var(--panel)}
 @media (max-width:980px){.stage{grid-template-columns:minmax(0,1fr)}}
-.mapbox{position:relative;min-width:0;background:var(--sea);border-right:1px solid var(--rule);aspect-ratio:1/1;max-height:46vh;max-width:46vh;margin-inline:auto;width:100%;overflow:hidden}
+.mapbox{position:relative;min-width:0;background:var(--sea);border-right:1px solid var(--rule);aspect-ratio:1/1;max-height:46vh;max-width:calc(46vh - 3cm);margin-inline:auto;width:100%;overflow:hidden}
 @media (max-width:980px){.mapbox{border-right:0;border-bottom:1px solid var(--rule);max-height:38vh;max-width:38vh}}
 #map{display:block;width:100%;height:100%}
 .legend{position:absolute;left:10px;bottom:8px;width:min(30%,250px);min-width:170px;display:grid;gap:5px;
@@ -189,6 +189,7 @@ select{font:500 12.5px/1 var(--f-mono);color:var(--ink);background:var(--panel);
 
 .ledger{border:1px solid var(--rule);background:var(--panel);padding:14px 16px 10px;display:grid;gap:10px}
 .ledger-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.ledger-top #catKey{flex-basis:100%;justify-content:flex-end}
 .seg{display:inline-flex}
 .seg input{position:absolute;opacity:0;pointer-events:none}
 .seg label{border-radius:0;margin-left:-1px}
@@ -201,15 +202,17 @@ select{font:500 12.5px/1 var(--f-mono);color:var(--ink);background:var(--panel);
 #tl{display:block;width:100%;min-width:760px;height:auto;cursor:crosshair;touch-action:pan-x}
 .ctx-key{display:flex;gap:10px;flex-wrap:wrap;font:500 9.5px/1.3 var(--f-mono);color:var(--ink-3);align-items:center}
 .ctx-key .keynote{width:100%;color:var(--ink-3);opacity:.9}
-#catKey span.cat{font-size:9.5px;padding:2px 6px}
+#catKey .cat{font-size:9.5px;padding:2px 6px}
 .ctx-key span{display:inline-flex;gap:6px;align-items:center}
-.ctx-key span.cat{background:var(--cc);color:var(--ct);padding:2px 6px;border-radius:3px;font-weight:700}
-.ctx-key span.cat svg path{fill:var(--ct)!important;stroke:none!important}
+.ctx-key .cat{background:var(--cc);color:var(--ct);padding:2px 6px;border-radius:3px;font-weight:700;
+  display:inline-flex;gap:6px;align-items:center;border:0;font:inherit;cursor:pointer;opacity:1;transition:opacity .15s}
+.ctx-key .cat[aria-pressed="false"]{opacity:.32}
+.ctx-key .cat svg path{fill:var(--ct)!important;stroke:none!important}
 
 .tip{position:fixed;pointer-events:none;z-index:9;background:var(--ink);color:var(--panel);font:400 12px/1.45 var(--f-mono);padding:8px 10px;border-radius:3px;max-width:280px;opacity:0;transition:opacity .12s}
 .tip b{font-weight:600}
 
-.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px 36px;padding-top:8px;border-top:1px solid var(--rule)}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px 36px;padding-top:8px}
 .notes section{display:grid;gap:8px;align-content:start;min-width:0}
 .notes p,.notes li{margin:0;color:var(--ink-2);font-size:14px;max-width:62ch}
 .notes ul{margin:0;padding-left:18px;display:grid;gap:6px}
@@ -447,8 +450,10 @@ table.data tbody tr{cursor:pointer}
           <button id="play" class="primary" data-i18n="btn.play">Play</button>
           <button id="next" aria-label="Next month">▶</button>
           <button id="jump" title="Jump to the next month with a launch" data-i18n="btn.next">Next launch ⇥</button>
-          <label for="speed" class="eyebrow" style="margin-left:4px" data-i18n="lbl.speed">Speed</label>
-          <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+          <span style="display:inline-flex;gap:6px;align-items:center;margin-left:4px">
+            <label for="speed" class="eyebrow" data-i18n="lbl.speed">Speed</label>
+            <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+          </span>
           <span class="seg" role="radiogroup" aria-label="Step by month or by year" style="margin-left:4px">
             <input type="radio" name="gran" id="granM" value="month" checked><label for="granM" data-i18n="lbl.month">Month</label>
             <input type="radio" name="gran" id="granY" value="year"><label for="granY" data-i18n="lbl.year">Year</label>
@@ -483,7 +488,7 @@ table.data tbody tr{cursor:pointer}
   <p class="stagenote"><i>*</i><span id="stageNote" data-i18n="map.foot">Impact points without an official figure are reconstructed from launch site, bearing and published range. They are estimates, not measurements.</span></p>
   <div class="ledger">
     <div class="ledger-top">
-      <h3 data-i18n="tl.head">Missiles and launch occasions per month</h3>
+      <h3 data-i18n="tl.head">Missile Launch Statistics</h3>
       <div class="ledger-ctl">
         <div class="bandctl" role="group" aria-label="Leader background bands">
           <span data-i18n="band.lbl">Leaders:</span>
@@ -504,6 +509,7 @@ table.data tbody tr{cursor:pointer}
           <button type="button" id="tzRst" aria-label="Fit the whole timeline">↺</button>
         </div>
       </div>
+      <div class="ctx-key" id="catKey"></div>
     </div>
     <div class="tlwrap"><svg id="tl" viewBox="0 0 1200 238" tabindex="0" role="slider" aria-label="Timeline month selector: stacked bars are missiles, the line is launch occasions" aria-valuetext=""></svg></div>
     <div class="ctx-key tl-key">
@@ -513,14 +519,12 @@ table.data tbody tr{cursor:pointer}
       <span><i class="sw unk"></i><span data-i18n="tl.k3">landing point not published</span></span>
       <span><svg width="24" height="10" aria-hidden="true"><line x1="1" y1="5" x2="23" y2="5" stroke="var(--ink)" stroke-width="1.6"/></svg><span data-i18n="tl.k4">Line: launch occasions (one firing event, however many missiles)</span></span>
     </div>
-    <div class="ctx-key" id="catKey"></div>
   </div>
 
   <div class="explorer">
     <div class="exp-top">
       <div style="padding:0">
         <h3 data-i18n="exp.title">North Korean Missile Launch Tracker</h3>
-        <p class="stagenote" style="margin-top:3px"><i>*</i><span data-i18n="exp.note">One row per missile, 1998 onward. Click a row to open its detail panel; click a column heading to sort.</span></p>
       </div>
       <div class="exp-row">
         <span class="fld"><label for="fY1" data-i18n="exp.y1">Year From</label><select id="fY1"></select></span>
@@ -536,11 +540,13 @@ table.data tbody tr{cursor:pointer}
           <option value="off" data-i18n="exp.off">MOD official verdict only</option></select></span>
         <span class="fld"><label for="fSea" data-i18n="exp.sea">Landing Area</label><select id="fSea"></select></span>
         <span class="fld"><label for="fFac" data-i18n="exp.fac">Launch Site</label><select id="fFac"></select></span>
-        <span class="fld"><label for="fQ" data-i18n="exp.q">Search</label><input type="search" id="fQ" placeholder="missile, site, date…" data-i18n-ph="exp.ph"></span>
+      </div>
+      <div class="exp-row">
         <label class="chk"><input type="checkbox" id="fOver"> <span data-i18n="exp.over">Overflights Only</span></label>
         <label class="chk"><input type="checkbox" id="fEast"> <span data-i18n="exp.east">Fired Eastward Only</span></label>
+        <span class="fld" style="margin-left:auto"><label for="fQ" data-i18n="exp.q">Search</label><input type="search" id="fQ" placeholder="missile, site, date…" data-i18n-ph="exp.ph"></span>
         <span style="display:inline-flex;gap:8px;padding-bottom:0"><button id="fRst" data-i18n="btn.reset">Reset</button>
-        <button id="fCsv" class="primary paused" type="button" data-i18n="btn.csv">Download CSV</button></span>
+        <button id="fApply" class="primary" type="button" data-i18n="btn.apply">Apply</button></span>
         <span class="exp-count" id="fCount"></span>
       </div>
     </div>
@@ -758,8 +764,8 @@ const W=900,H=760, svg=d3.select("#map");
 // Default frame = the launch theatre: North Korea, the Korean peninsula, the East Sea / Sea of
 // Japan and the Japanese archipelago. The rest of Japan's EEZ (Ogasawara, Minamitorishima) is
 // still drawn and reachable by zooming out.
-const FRAME={type:"MultiPoint",coordinates:[[124.8,32.6],[134,32.6],[143.2,32.6],
-  [124.8,38.9],[143.2,38.9],[124.8,45.2],[134,45.2],[143.2,45.2]]};
+const FRAME={type:"MultiPoint",coordinates:[[123,32.6],[134,32.6],[145,32.6],
+  [123,38.9],[145,38.9],[123,45.2],[134,45.2],[145,45.2]]};
 const proj=d3.geoConicConformal().parallels([24,42]).rotate([-137,0]).fitExtent([[2,2],[W-2,H-2]],FRAME);
 const path=d3.geoPath(proj);
 svg.append("defs").html(`<clipPath id="clipMap"><rect width="${W}" height="${H}"/></clipPath>
@@ -1210,8 +1216,18 @@ const gBand=tl.append("g"), gT=tl.append("g"), gAx=tl.append("g"), gOcc=tl.appen
 // Marker shape + colour per context category; colours come from CTXCAT, the same ones used in the "in context" lists.
 const CTXSHAPE={N:d3.symbolTriangle,U:d3.symbolSquare,K:d3.symbolDiamond,S:d3.symbolCircle,J:d3.symbolCross,R:d3.symbolStar};
 const ctxGlyph=(c,sz)=>d3.symbol(CTXSHAPE[c],sz)();
-document.getElementById("catKey").innerHTML=Object.keys(CTXCAT).map(c=>
-  `<span class="cat" style="--cc:${CTXCAT[c][1]};--ct:${CTXCAT[c][2]}"><svg width="14" height="14" viewBox="-7 -7 14 14" aria-hidden="true"><path d="${ctxGlyph(c,50)}"/></svg>${TCAT(c)}</span>`).join("");
+// Category key doubles as a filter: click a chip to hide/show that category's
+// markers on the timeline above; TLCATON holds the categories currently shown.
+const TLCATON=new Set(Object.keys(CTXCAT));
+const catKeyEl=document.getElementById("catKey");
+catKeyEl.innerHTML=Object.keys(CTXCAT).map(c=>
+  `<button type="button" class="cat" data-cat="${c}" aria-pressed="true" style="--cc:${CTXCAT[c][1]};--ct:${CTXCAT[c][2]}"><svg width="14" height="14" viewBox="-7 -7 14 14" aria-hidden="true"><path d="${ctxGlyph(c,50)}"/></svg>${TCAT(c)}</button>`).join("");
+catKeyEl.addEventListener("click",e=>{
+  const b=e.target.closest("button[data-cat]"); if(!b) return;
+  const c=b.dataset.cat;
+  if(TLCATON.has(c)){TLCATON.delete(c);b.setAttribute("aria-pressed","false");}
+  else{TLCATON.add(c);b.setAttribute("aria-pressed","true");}
+  drawTL();});
 function drawTL(){
   const vis=L.filter(inScope);
   const by=d3.rollup(vis,v=>({in:v.filter(d=>d.status==="in").length,out:v.filter(d=>d.status==="out").length,unk:v.filter(d=>d.status==="unk").length}),d=>d.ym);
@@ -1267,7 +1283,7 @@ function drawTL(){
       tip.style.left=Math.min(e.clientX+14,innerWidth-300)+"px"; tip.style.top=(e.clientY+14)+"px";})
     .on("mouseleave",hideTip);
   gCtx.selectAll("*").remove(); const stackN={};
-  CTX2.forEach(([k,t,l])=>{const km=cxM(k);if(!mIndex.has(km))return;const n=stackN[km]=(stackN[km]||0)+1;const cx=x(km)+x.bandwidth()/2, cy=m.t-14-(n-1)*10;
+  CTX2.filter(([k,t])=>TLCATON.has(t)).forEach(([k,t,l])=>{const km=cxM(k);if(!mIndex.has(km))return;const n=stackN[km]=(stackN[km]||0)+1;const cx=x(km)+x.bandwidth()/2, cy=m.t-14-(n-1)*10;
     const gg=gCtx.append("g").attr("transform",`translate(${cx},${cy})`).style("cursor","help");
     gg.append("path").attr("d",ctxGlyph(t,52)).style("fill",CTXCAT[t][1]).style("stroke","var(--ink)").attr("stroke-width",.8).attr("stroke-opacity",.7);
     gg.append("circle").attr("r",6).style("fill","transparent");
@@ -1397,15 +1413,15 @@ document.querySelectorAll('input[name="scope"]').forEach(r=>r.onchange=()=>{scop
 // texts and the long methodology notes stay in English, because they quote or cite the
 // originals and translating them would put words into those sources' mouths.
 const I18N={
- ko:{"tab.log":"월별 기록","tab.det":"발사 상세","tab.stat":"연도 통계","tab.ctx":"지정학 사건",
+ ko:{"tab.log":"월별 기록","tab.det":"발사 상세","tab.stat":"연도 통계","tab.ctx":"지정학적 사건",
   "btn.play":"재생","btn.next":"다음 발사 ⇥","lbl.speed":"속도","lbl.month":"월","lbl.year":"연",
-  "lbl.all":"전체 발사","lbl.east":"동쪽 방향만","btn.reset":"초기화","btn.csv":"CSV 내려받기",
+  "lbl.all":"전체 발사","lbl.east":"동쪽 방향만","btn.reset":"초기화","btn.csv":"CSV 내려받기","btn.apply":"확인",
   "kpi.month":"이 달의 미사일 수 / 발사 회수","kpi.year":"이 해의 미사일 수 / 발사 회수","kpi.cum":"누적 미사일 수 / 발사 회수","kpi.cumA":"미사일 수 / 발사 회수","kpi.cumB":"동쪽 방향 미사일 수 / 발사 회수","kpi.since":", 1998년 1월 이후",
   "kpi.in":"일본 EEZ 안, 누적","kpi.over":"일본 상공 통과, 누적",
   "leg.in":"일본 EEZ 안 (방위성 발표)","leg.out":"EEZ 밖","leg.unk":"낙하 지점 미상",
   "leg.eez":"일본 EEZ (근사)","leg.est":"추정 지점 + 오차","leg.cfl":"EEZ 귀속 견해 상충",
-  "map.foot":"공식 수치가 없는 낙하 지점은 발사 장소·방위각·공표 사거리로 재구성한 것입니다. 실측이 아니라 추정입니다.",
-  "tl.head":"월별 미사일 수와 발사 회수","band.lbl":"지도자 구간:",
+  "map.foot":"공식 수치가 제공되지 않은 낙하 지점은 발사 장소·방위각·공표 사거리를 기반으로 재구성한 추정치입니다.",
+  "tl.head":"미사일 발사 통계","band.lbl":"지도자 구간:",
   "lay.btn":"⊞ 지도 레이어","lay.eez":"배타적경제수역","lay.jp":"일본 (기본 레이어)","lay.kr":"한국",
   "lay.kp":"북한","lay.cn":"중국","lay.ru":"러시아","lay.mil":"군사 시설 (도시 단위)",
   "lay.mkr":"한국","lay.mjp":"일본 · 주일미군","lay.mkp":"북한","lay.mcn":"중국","lay.mru":"러시아",
@@ -1413,7 +1429,7 @@ const I18N={
   "lay.err":"추정 지점의 오차 타원",
   "lay.note":"군사 시설은 공개 자료를 근거로 도시 단위로만 표시합니다. 맥락 정보이며 개별 발사에 대한 주장이 아닙니다.",
   "geo.scope":"지도에 표시된 기간만","geo.all":"모든 범주",
-  "h.src":"출처와 라이선스","h.two":"두 개의 장부, 두 개의 합계","h.draw":"낙하 지점을 그리는 방법",
+  "h.src":"자료 출처","h.two":"두 개의 장부, 두 개의 합계","h.draw":"낙하 지점을 그리는 방법",
   "h.off":"공식 판정을 붙이는 기준","h.dis":"두 당국의 판단이 갈릴 때","h.care":"읽을 때 유의할 점",
   "h1.a":"북한 미사일 발사","h1.b":"트래커","credit":"제작","th.dark":"어둡게","th.light":"밝게",
   "exp.title":"북한 미사일 발사 트래커","exp.y1":"시작 연도","exp.y2":"종료 연도","exp.rg":"정권","exp.any":"전체","exp.kji":"김정일 (2011-12-17까지)","exp.kju":"김정은 (2011-12-17부터)","exp.cls":"미사일 분류","exp.mis":"미사일 명칭","exp.eez":"EEZ 판정","exp.sea":"낙하 해역","exp.fac":"발사 장소","exp.q":"검색","exp.ph":"미사일, 장소, 날짜…","exp.over":"상공 통과만","exp.east":"동쪽 방향만","exp.in":"일본 EEZ 안","exp.out":"일본 EEZ 밖","exp.unk":"낙하 지점 미공표","exp.off":"방위성 공식 판정만","exp.count":"전체 $T발 중 $N발","exp.note":"한 행이 미사일 한 발입니다(1998년 이후). 행을 누르면 상세가 열리고, 열 제목을 누르면 정렬됩니다.","col.date":"날짜","col.time":"시각","col.mis":"미사일","col.cls":"분류","col.fac":"발사 장소","col.brg":"방위","col.rng":"사거리 km","col.apo":"정점 km","col.sea":"낙하 해역","col.eez":"EEZ","col.over":"일본 상공 통과","vd.in":"안","vd.out":"밖","vd.est":" 추정","vd.na":"미상","vd.yes":"예","cls.HGV":"극초음속 활공체","cls.ICBM":"대륙간","cls.IRBM":"중장거리","cls.MRBM":"준중거리","cls.SLBM":"잠수함발사","cls.SLV":"위성 발사체","cls.SRBM":"단거리","cls.Unknown":"미공표","sea.sea-of-japan":"동해 / 일본해","sea.yellow-sea":"서해 / 황해","sea.pacific-ocean":"태평양","sea.north-korea":"북한 내륙","sea.unknown":"미상","sea.na":"해당 없음","tt.miss":"발사 미사일 수","tt.occ":"발사 회수","leg.in2":"EEZ 안","leg.out2":"밖","leg.unk2":"미상","tl.hover":"* 막대나 마커에 커서를 올리면 수치가 나옵니다","tl.k1":"막대: 발사된 미사일 수 — 일본 EEZ 안","tl.k2":"밖","tl.k3":"낙하 지점 미공표","tl.k4":"선: 발사 회수(미사일 수와 무관하게 한 번의 발사 사건)","a.lang":"언어","a.theme":"밝은 모드와 어두운 모드 전환","a.map":"선택한 달의 북한 미사일 궤적이 표시된 동해 지도","a.zin":"확대","a.zout":"축소","a.zrst":"기본 화면으로","a.ring":"평양 기준 거리 링","a.tzin":"타임라인 확대","a.tzout":"타임라인 축소","a.tzrst":"타임라인 전체 보기",
@@ -1426,13 +1442,13 @@ const I18N={
 },
  ja:{"tab.log":"月別記録","tab.det":"発射の詳細","tab.stat":"年次統計","tab.ctx":"地政学的出来事",
   "btn.play":"再生","btn.next":"次の発射 ⇥","lbl.speed":"速度","lbl.month":"月","lbl.year":"年",
-  "lbl.all":"すべての発射","lbl.east":"東方向のみ","btn.reset":"リセット","btn.csv":"CSVダウンロード",
+  "lbl.all":"すべての発射","lbl.east":"東方向のみ","btn.reset":"リセット","btn.csv":"CSVダウンロード","btn.apply":"適用",
   "kpi.month":"今月の発数 / 回数","kpi.year":"今年の発数 / 回数","kpi.cum":"累計の発数 / 回数","kpi.cumA":"発数 / 回数","kpi.cumB":"東方向の発数 / 回数","kpi.since":"、1998年1月以降",
   "kpi.in":"日本のEEZ内、累計","kpi.over":"日本上空通過、累計",
   "leg.in":"日本のEEZ内（防衛省）","leg.out":"EEZ外","leg.unk":"落下地点不明",
   "leg.eez":"日本のEEZ（概略）","leg.est":"推定地点＋誤差","leg.cfl":"EEZの帰属で見解が異なる",
   "map.foot":"公式の数値がない落下地点は、発射地点・方位・公表された飛距離から再構成したものです。実測ではなく推定です。",
-  "tl.head":"月ごとの発数と発射回数","band.lbl":"指導者の区間：",
+  "tl.head":"ミサイル発射統計","band.lbl":"指導者の区間：",
   "lay.btn":"⊞ 地図レイヤー","lay.eez":"排他的経済水域","lay.jp":"日本（基本レイヤー）","lay.kr":"韓国",
   "lay.kp":"北朝鮮","lay.cn":"中国","lay.ru":"ロシア","lay.mil":"軍事施設（市町村単位）",
   "lay.mkr":"韓国","lay.mjp":"日本・在日米軍","lay.mkp":"北朝鮮","lay.mcn":"中国","lay.mru":"ロシア",
@@ -1487,8 +1503,8 @@ function cxDate(k){const mm=k.slice(5,7);
   const dd=k.slice(8,10);
   return LANG==="en"?`${MON3[+mm-1]} ${+dd}`:`${+mm}/${+dd}`;}
 function relabelCats(){
-  document.querySelectorAll("#catKey span.cat").forEach(el=>{
-    const c=Object.keys(CTXCAT)[[...el.parentNode.children].indexOf(el)];
+  document.querySelectorAll("#catKey button.cat").forEach(el=>{
+    const c=el.dataset.cat;
     if(c) el.lastChild.textContent=TCAT(c);});
   document.querySelectorAll("#geoCats button[data-cat]").forEach(b=>{
     b.lastChild.textContent=TCAT(b.dataset.cat);});}
@@ -1959,30 +1975,23 @@ function drawTable(){
       document.querySelector(".stage").scrollIntoView({behavior:"smooth",block:"center"});}});
 }
 function bindExp(){
+  // Filters are staged on change, not applied live: the table only re-renders
+  // when Apply (or Reset) is clicked, so picking several filters doesn't
+  // re-render the table after every single click.
   const on=(id,k,ev)=>{const el=document.getElementById(id);
     el.addEventListener(ev||"change",()=>{EXPSEL[k]=el.type==="checkbox"?el.checked:el.value;
       if(k==="y1"&&EXPSEL.y1>EXPSEL.y2){EXPSEL.y2=EXPSEL.y1;document.getElementById("fY2").value=EXPSEL.y2;}
-      if(k==="y2"&&EXPSEL.y2<EXPSEL.y1){EXPSEL.y1=EXPSEL.y2;document.getElementById("fY1").value=EXPSEL.y1;}
-      drawTable();});};
+      if(k==="y2"&&EXPSEL.y2<EXPSEL.y1){EXPSEL.y1=EXPSEL.y2;document.getElementById("fY1").value=EXPSEL.y1;}});};
   on("fY1","y1");on("fY2","y2");on("fRg","rg");on("fCls","cls");on("fMis","mis");
   on("fEez","eez");on("fSea","sea");on("fFac","fac");on("fQ","q","input");
   on("fOver","over");on("fEast","east");
+  document.getElementById("fApply").onclick=()=>drawTable();
   document.getElementById("fRst").onclick=()=>{
     Object.assign(EXPSEL,{y1:YRS[0],y2:YRS[YRS.length-1],rg:"",cls:"",mis:"",eez:"",sea:"",fac:"",q:"",over:false,east:false});
     ["fY1","fY2","fRg","fCls","fMis","fEez","fSea","fFac","fQ"].forEach((id,n)=>{
       const el=document.getElementById(id); el.value=id==="fY1"?YRS[0]:id==="fY2"?YRS[YRS.length-1]:"";});
     document.getElementById("fOver").checked=false; document.getElementById("fEast").checked=false;
     sortKey="date_kst"; sortDir=1; drawTable();};
-  const note=t=>{document.getElementById("fFoot").textContent=t;};
-  // CSV export is deliberately switched off. The launch records come from the CNS North Korea
-  // Missile Test Database, which NTI/CNS publish without a stated licence or reuse terms, so
-  // redistributing them as a file is not something this page should do until that is cleared.
-  // The button stays visible so the pause is visible too.
-  const csvBtn=document.getElementById("fCsv");
-  csvBtn.classList.add("paused");
-  csvBtn.setAttribute("aria-disabled","true");
-  csvBtn.title="Export paused while the source database's reuse terms are confirmed";
-  csvBtn.onclick=()=>note("CSV export is paused. The launch records come from the CNS North Korea Missile Test Database (NTI), which carries no published licence or reuse terms, so this page does not hand the data on as a file. The filters, the table and the launch detail stay fully usable. See Sources and licences below.");
 }
 fillSelects(); bindExp(); drawTable();
 
