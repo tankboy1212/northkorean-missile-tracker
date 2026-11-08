@@ -103,9 +103,10 @@ header{position:relative}
 .geo-filters .geo-all{order:99;background:transparent;color:var(--ink-2);border:1px solid var(--rule);font-weight:500;font-size:7.7px}
 .geo-filters .geo-all:hover{border-color:var(--ink-2);color:var(--ink)}
 .geo-hint{font:500 11px/1.4 var(--f-mono);color:var(--ink-3)}
-.geo-list{overflow:auto;padding:4px 20px 18px;flex:1;min-height:0}
+.geo-list{overflow:auto;padding:0 20px 18px;flex:1;min-height:0}
 .geo-yr{font:600 11px/1 var(--f-mono);letter-spacing:.07em;color:var(--ink-3);text-transform:uppercase;
   padding:14px 0 6px;position:sticky;top:0;background:var(--panel)}
+.geo-list .geo-yr:first-child{padding-top:6px}
 .geo-it{display:grid;grid-template-columns:62px 1fr;gap:9px;padding:7px 8px;margin:3px 0;border-radius:3px;align-items:baseline;background:color-mix(in srgb,var(--cc) 13%,var(--panel));border-left:5px solid var(--cc)}
 .geo-it .gd{font:600 11px/1.5 var(--f-mono);color:var(--ink-2);font-variant-numeric:tabular-nums}
 .geo-it .gt{font-size:12.5px;line-height:1.45}
@@ -148,7 +149,7 @@ h3{font:700 13.5px/1.3 var(--f-body);letter-spacing:.005em;margin:0;color:var(--
 .sw.unk{border:1.5px solid var(--unknown);border-radius:50%}
 .sw.eez{border-top:1.5px dashed var(--ink-2);height:0;width:18px}
 
-.log{display:flex;flex-direction:column;min-width:0}
+.log{display:flex;flex-direction:column;min-width:0;min-height:480px}
 .log-head{padding:10px 20px 8px;border-bottom:1px solid var(--rule);display:grid;gap:5px;flex:none}
 .month{display:block;height:34px;overflow:hidden;white-space:nowrap}
 .month b{font:700 36px/0.95 var(--f-display);font-variant-numeric:tabular-nums;letter-spacing:.01em}
@@ -236,11 +237,25 @@ svg text{font-family:var(--f-mono)}
   font:600 12.5px/1.15 var(--f-body);letter-spacing:.005em;color:var(--ink-3);padding:10px 8px}
 .tab:last-child{border-right:0}
 .tab.on{color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent);box-shadow:inset 0 -2px 0 var(--inside)}
-.loginner{display:flex;flex-direction:column;min-height:0;height:100%;overflow:hidden}
+.loginner{display:flex;flex-direction:column;min-height:0;height:100%;overflow-y:auto;overflow-x:hidden}
 @media (min-width:981px){.log{position:relative;display:block}
   .loginner{position:absolute;inset:0}}
 .pane{display:flex;flex-direction:column;min-width:0;min-height:0;flex:1 1 auto}
 .pane[hidden]{display:none}
+/* Desktop: the heading tabs become a narrow rail pinned to the left of this
+   column, and the active tab opens as a sub-panel filling the rest of the
+   width to the rail's right — the map's own grid column is untouched, so it
+   keeps its full size; this panel just reorganizes within its own 360px. */
+@media (min-width:981px){
+  .loginner{flex-direction:row;overflow:hidden}
+  .tabs{flex-direction:column;flex:none;width:92px;border-bottom:0;border-right:1px solid var(--rule);overflow-y:auto}
+  .tab{border-right:0;border-bottom:1px solid var(--rule);text-align:left;line-height:1.3;padding:10px 10px}
+  .tab:last-child{border-bottom:0}
+  .tab.on{box-shadow:inset 2px 0 0 var(--inside)}
+  .pane{overflow-y:auto;overflow-x:hidden;border-left:1px solid var(--rule)}
+}
+@keyframes paneSlideIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+@media (min-width:981px){.pane.slidein{animation:paneSlideIn .22s ease-out}}
 
 
 /* KPI that opens the year breakdown */
@@ -1667,7 +1682,8 @@ const TABS={log:[document.getElementById("tabLog"),document.getElementById("pane
 const paneLog=TABS.log[1], paneDet=TABS.detail[1], paneStats=TABS.stats[1];
 function showTab(which){
   for(const k in TABS){const [t,p]=TABS[k];const on=k===which;
-    p.hidden=!on; t.classList.toggle("on",on); t.setAttribute("aria-selected",String(on));}
+    p.hidden=!on; t.classList.toggle("on",on); t.setAttribute("aria-selected",String(on));
+    if(on){p.classList.remove("slidein");void p.offsetWidth;p.classList.add("slidein");}}
 }
 TABS.log[0].onclick=()=>showTab("log");
 TABS.detail[0].onclick=()=>{showTab("detail"); if(selI==null) renderDetail(null);};
