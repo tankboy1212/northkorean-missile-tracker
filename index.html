@@ -114,7 +114,7 @@ header{position:relative}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-body);margin:0}
-.wrap{max-width:1320px;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:28px 56px;display:grid;gap:22px}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:14px 32px;display:grid;gap:14px}
 header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 18px}
 @media (max-width:720px){header{grid-template-columns:minmax(0,1fr)}}
 .eyebrow{font:500 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
@@ -125,9 +125,9 @@ h3{font:700 13.5px/1.3 var(--f-body);letter-spacing:.005em;margin:0;color:var(--
 
 .stage{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:0;border:1px solid var(--rule);background:var(--panel)}
 @media (max-width:980px){.stage{grid-template-columns:minmax(0,1fr)}}
-.mapbox{position:relative;min-width:0;background:var(--sea);border-right:1px solid var(--rule)}
-@media (max-width:980px){.mapbox{border-right:0;border-bottom:1px solid var(--rule)}}
-#map{display:block;width:100%;height:auto}
+.mapbox{position:relative;min-width:0;background:var(--sea);border-right:1px solid var(--rule);aspect-ratio:1/1;max-height:46vh;margin-inline:auto;width:100%;overflow:hidden}
+@media (max-width:980px){.mapbox{border-right:0;border-bottom:1px solid var(--rule);max-height:38vh}}
+#map{display:block;width:100%;height:100%}
 .legend{position:absolute;left:10px;bottom:8px;width:min(30%,250px);min-width:170px;display:grid;gap:5px;
   opacity:0;pointer-events:none;transition:opacity .22s;z-index:4;
   font:500 9.5px/1.25 var(--f-mono);color:var(--ink-2);background:color-mix(in srgb,var(--panel) 88%,transparent);
@@ -141,7 +141,7 @@ h3{font:700 13.5px/1.3 var(--f-body);letter-spacing:.005em;margin:0;color:var(--
   border-radius:3px;background:color-mix(in srgb,var(--panel) 55%,transparent);backdrop-filter:blur(6px);
   font:600 9px/1.2 var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);cursor:default}
 .legend.show + .legtab{opacity:0}
-@media (max-width:640px){.legend{position:static;width:auto;border:0;border-top:1px solid var(--rule)}}
+@media (max-width:640px){.legend{left:8px;right:8px;bottom:8px;width:auto;max-height:calc(100% - 16px);overflow-y:auto}}
 .sw{width:11px;height:11px;display:inline-block}
 .sw.in{background:var(--inside);transform:rotate(45deg) scale(.85)}
 .sw.out{background:var(--outside);border-radius:50%}
@@ -149,9 +149,9 @@ h3{font:700 13.5px/1.3 var(--f-body);letter-spacing:.005em;margin:0;color:var(--
 .sw.eez{border-top:1.5px dashed var(--ink-2);height:0;width:18px}
 
 .log{display:flex;flex-direction:column;min-width:0}
-.log-head{padding:14px 20px 12px;border-bottom:1px solid var(--rule);display:grid;gap:8px;flex:none}
-.month{display:block;height:48px;overflow:hidden;white-space:nowrap}
-.month b{font:700 52px/0.9 var(--f-display);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.log-head{padding:10px 20px 8px;border-bottom:1px solid var(--rule);display:grid;gap:5px;flex:none}
+.month{display:block;height:34px;overflow:hidden;white-space:nowrap}
+.month b{font:700 36px/0.95 var(--f-display);font-variant-numeric:tabular-nums;letter-spacing:.01em}
 .hos{display:grid;gap:0}
 .hrow{height:19px;font:500 11.5px/19px var(--f-mono);color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hrow b{font-weight:600;color:var(--ink)}
@@ -163,9 +163,9 @@ button.primary{background:var(--ink);color:var(--panel);border-color:var(--ink);
 select{font:500 12.5px/1 var(--f-mono);color:var(--ink);background:var(--panel);border:1px solid var(--rule);padding:7px 6px;border-radius:3px}
 
 .kpis{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--rule);flex:none}
-.kpi{padding:8px 20px;display:grid;gap:2px;border-right:1px solid var(--rule);border-top:1px solid var(--rule)}
+.kpi{padding:5px 20px;display:grid;gap:1px;border-right:1px solid var(--rule);border-top:1px solid var(--rule)}
 .kpi:nth-child(2n){border-right:0}.kpi:nth-child(-n+2){border-top:0}
-.kpi .v{font:600 26px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.kpi .v{font:600 20px/1 var(--f-display);font-variant-numeric:tabular-nums}
 .kpi .l{font:500 11px/1.3 var(--f-mono);color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em}
 .kpi .v.in{color:var(--inside)}
 .kpi .v em{font:500 17px/1 var(--f-display);font-style:normal;color:var(--ink-3)}
@@ -230,7 +230,7 @@ svg text{font-family:var(--f-mono)}
 /* tabs on the side panel */
 .tabs{display:flex;border-bottom:1px solid var(--rule)}
 .tab{flex:1;border:0;border-right:1px solid var(--rule);border-radius:0;background:transparent;
-  font:600 11.5px/1 var(--f-mono);text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);padding:11px 8px}
+  font:600 12.5px/1.15 var(--f-body);letter-spacing:.005em;color:var(--ink-3);padding:10px 8px}
 .tab:last-child{border-right:0}
 .tab.on{color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent);box-shadow:inset 0 -2px 0 var(--inside)}
 .loginner{display:flex;flex-direction:column;min-height:0;height:100%;overflow:hidden}
@@ -428,10 +428,10 @@ table.data tbody tr{cursor:pointer}
     <aside class="log">
      <div class="loginner">
       <div class="tabs" role="tablist" aria-label="Side panel view">
-        <button class="tab on" id="tabLog" role="tab" aria-selected="true" aria-controls="paneLog" data-i18n="tab.log">Month log</button>
-        <button class="tab" id="tabDetail" role="tab" aria-selected="false" aria-controls="paneDetail" data-i18n="tab.det">Launch detail</button>
-        <button class="tab" id="tabStats" role="tab" aria-selected="false" aria-controls="paneStats" data-i18n="tab.stat">Year stats</button>
-        <button class="tab" id="tabCtx" role="tab" aria-selected="false" aria-controls="paneCtx" data-i18n="tab.ctx">Geopolitical events</button>
+        <button class="tab on" id="tabLog" role="tab" aria-selected="true" aria-controls="paneLog" data-i18n="tab.log">Month Log</button>
+        <button class="tab" id="tabDetail" role="tab" aria-selected="false" aria-controls="paneDetail" data-i18n="tab.det">Launch Detail</button>
+        <button class="tab" id="tabStats" role="tab" aria-selected="false" aria-controls="paneStats" data-i18n="tab.stat">Year Stats</button>
+        <button class="tab" id="tabCtx" role="tab" aria-selected="false" aria-controls="paneCtx" data-i18n="tab.ctx">Geopolitical Events</button>
       </div>
       <div class="pane" id="paneLog" role="tabpanel" aria-live="polite">
       <div class="log-head">
@@ -566,49 +566,6 @@ table.data tbody tr{cursor:pointer}
       <p><b>This page was inspired by a video shared on X in 2026</b> that counted Japanese Ministry of Defense announcements of North Korean missile launches and reached a running total of "233+" by August 2026. What that post contributed is the idea: showing those launches as a map that moves through time. Everything on this page was built separately from it — the dataset, the launch-by-launch reconstruction, the EEZ verdicts and their linkage to individual MOD statements, the context timeline, the wording and all of the code. No frame, figure, graphic, text or data file from the original post is reproduced or re-used here, and the totals on this page deliberately differ from it because a different source is being counted. <span class="num" id="inspoSlot">Original post: credit line and link to be added by the author.</span></p>
       <h3>The context timeline</h3>
       <p>Each entry links to the institution that published it — the UN, the CTBTO, the IOC, national governments and two state news agencies. Those are links, not copies: no text from them is reproduced here, and each link carries its publisher's name beside it. Pages marked “Korean” are South Korean government pages; linked Korean government material is published under the <a href="https://www.kogl.or.kr/info/license.do" target="_blank" rel="noopener">Korea Open Government Licence</a>.</p>
-    </section>
-    <section>
-      <h2 data-i18n="h.two">Two ledgers, two totals</h2>
-      <p>Japan's Ministry of Defense (MOD) counts launches it detected and chose to announce. The CNS North Korea Missile Test Database counts every known missile with a range of at least 300 km and a payload of at least 500 kg, using U.S., South Korean and Japanese reports. The totals differ. For 2022, MOD's own summary gives <span class="num">59</span> missiles on <span class="num">31</span> occasions; this map shows <span class="num" id="n2022">–</span> missiles on <span class="num" id="n2022o">–</span> occasions. The video that inspired this page tallied MOD announcements only and reached "233+" by August 2026.</p>
-      <p>This map uses the CNS record as the backbone, one row per missile, so you can see every launch and not only the ones announced in Tokyo.</p>
-    </section>
-    <section>
-      <h2 data-i18n="h.draw">How landing points are drawn</h2>
-      <ul>
-        <li>Start: the launch facility coordinates in the CNS database.</li>
-        <li>Direction: the bearing (mostly from MOD statements) and the reported flight range. The end point is a great-circle projection from the launch site.</li>
-        <li>Verdict: MOD's official EEZ call, but only where that call can be tied to <em>this</em> missile (<span class="num" id="nOff">–</span> missiles). Otherwise the point is tested against Marine Regions' EEZ boundary and marked <em>est.</em></li>
-        <li>Check: where both exist, the reconstruction matches MOD's verdict for <span class="num" id="nAgree">–</span> missiles.</li>
-        <li><span class="num" id="nUnk">–</span> missiles have no published range, so they appear only as a short dashed stub from the launch site.</li>
-        <li>Every estimated point carries an error ellipse: about ±8% of the published range along the flight path and ±3° of bearing across it, plus 15 km for the launch point, because the facility centroid is not where a road-mobile launcher actually stood.</li>
-      </ul>
-    </section>
-    <section>
-      <h2 data-i18n="h.off">How an official verdict is attached</h2>
-      <p>An EEZ verdict is only called official when a specific Japanese government statement can be tied to the individual missile in that row. Three ways qualify: the statement lists a launch time matching the record; the statement covers a day on which only one missile was recorded; or the statement gives an exact count equal to the number of missiles recorded that day. Anything else is left as <b>unknown</b>, and the launch detail says why.</p>
-      <p>This replaces an earlier rule that attached verdicts by calendar date. On days with more than one missile that rule spread a verdict across missiles the statement never covered — on 2 November 2022, for instance, four missiles fired towards the West Sea carried an "official, outside" label taken from a statement about a different launch on the east coast. Those labels are gone. The cost is that statements which genuinely do not resolve are now visible as gaps: MOD's Defense White Paper says three of the four missiles of 6 March 2017 fell inside Japan's EEZ without saying which three, so none of the four carries the verdict and the day-level statement is shown instead.</p>
-    </section>
-    <section>
-      <h2 data-i18n="h.dis">When the two authorities disagree</h2>
-      <p>Three launches are marked as <b>inside Japan's EEZ by Japan's own statement</b> while the boundary layer this map is drawn from places the reconstructed point in another state's zone. They are flagged on the map with a dashed ring, and the launch detail names both readings.</p>
-      <ul>
-        <li><b>29 May 2017</b> and <b>2 October 2019.</b> Both points lie roughly 180–230 km from the Liancourt Rocks and about 300 km from the nearest undisputed Japanese land. Japan measures an EEZ from those rocks as Takeshima; South Korea controls and administers them as Dokdo, and the Marine Regions layer assigns the surrounding water to South Korea. Neither the launch record nor the drawing is wrong — the two states draw the boundary in different places.</li>
-        <li><b>18 February 2023.</b> The reconstructed point sits about 248 km from the Russian coast and 285 km from Hokkaido, in water the layer assigns to Russia; Japan and Russia have no agreed boundary in this sea. The 37 km difference is smaller than the reconstruction's own margin of error, so the point itself cannot settle the question either.</li>
-      </ul>
-      <p>These are shown rather than resolved. Treating one authority's line as the truth would hide a real disagreement about who the water belongs to.</p>
-    </section>
-    <section>
-      <h2 data-i18n="h.care">Read with care</h2>
-      <ul>
-        <li>Dates are in Japan/Korea time (UTC+9). One launch can carry several missiles.</li>
-        <li>EEZ lines are approximate. Overlapping claims around Dokdo/Takeshima, the Senkakus and the Kurils, and the Japan–Korea joint zone, are hatched.</li>
-        <li>Reconstructed impact points are indicative. Real trajectories are lofted or manoeuvring, and ranges are rounded.</li>
-        <li>"Fired eastward" means a bearing between 10° and 170°, or a confirmed overflight. It is a filter on direction of fire, not a judgement about what a launch was aimed at.</li>
-        <li>Missiles and launch occasions are counted separately. An occasion groups missiles fired on the same day within an hour of each other; missiles with no published launch time add one further occasion for that day. The rule is a reconstruction of this page's own, not an official count.</li>
-        <li>Where North Korea describes a launch differently from Japan, South Korea, the United States or the UN — above all the satellite launches, which North Korea presents as peaceful space activity and which the Security Council treats as prohibited use of ballistic-missile technology — both accounts are recorded on the launch detail, and neither is adjudicated here.</li>
-        <li>Military sites, ports and shipping lanes are optional context layers at city level, drawn from published sources. They are not evidence about any individual launch and no site is placed more precisely than its city or island.</li>
-        <li>Missile and site names are given in their North Korean form first where one is established in open sources, with the designation used elsewhere in brackets. The string recorded in the source database is kept on every launch's detail panel.</li>
-      </ul>
     </section>
   </div>
   <p class="credit"><span data-i18n="credit">Created by</span> <b>Jihye Yoo</b></p>
@@ -2028,13 +1985,6 @@ function bindExp(){
   csvBtn.onclick=()=>note("CSV export is paused. The launch records come from the CNS North Korea Missile Test Database (NTI), which carries no published licence or reuse terms, so this page does not hand the data on as a file. The filters, the table and the launch detail stay fully usable. See Sources and licences below.");
 }
 fillSelects(); bindExp(); drawTable();
-
-// notes numbers
-document.getElementById("n2022").textContent=L.filter(d=>d.ym.startsWith("2022")).length;
-document.getElementById("n2022o").textContent=occCount(L.filter(d=>d.ym.startsWith("2022")));
-const off=L.filter(d=>d.official);document.getElementById("nOff").textContent=off.length;
-document.getElementById("nAgree").textContent=152;
-document.getElementById("nUnk").textContent=L.filter(d=>d.impact_lat==null).length;
 
 drawTL();setMonth(cur);renderDetail(null);renderGeo();
 let lang0="en"; try{lang0=localStorage.getItem("nkm-lang")||"en";}catch(e){}
