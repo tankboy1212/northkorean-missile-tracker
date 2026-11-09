@@ -96,9 +96,9 @@ header{position:relative}
 .geo-filters button{padding:3px 6px;font:500 7.7px/1 var(--f-mono);letter-spacing:.01em}
 .geo-filters button{border:2px solid var(--cc);background:var(--cc);color:var(--ct);font-weight:600;
   display:inline-flex;align-items:center;gap:5px;cursor:pointer;transition:background .12s,color .12s,opacity .12s}
-.geo-filters button svg path{fill:var(--ct);stroke:none}
+.geo-filters button svg:not(.icn) path{fill:var(--ct);stroke:none}
 .geo-filters button[aria-pressed="false"]{background:transparent;color:var(--ink-3);border:2px dashed var(--rule);font-weight:500;opacity:.75}
-.geo-filters button[aria-pressed="false"] svg path{fill:var(--ink-3)}
+.geo-filters button[aria-pressed="false"] svg:not(.icn) path{fill:var(--ink-3)}
 .geo-filters button[aria-pressed="false"]:hover{border-color:var(--cc);color:var(--ink)}
 .geo-filters .geo-all{order:99;background:transparent;color:var(--ink-2);border:1px solid var(--rule);font-weight:500;font-size:7.7px}
 .geo-filters .geo-all:hover{border-color:var(--ink-2);color:var(--ink)}
@@ -207,7 +207,7 @@ select{font:500 12.5px/1 var(--f-mono);color:var(--ink);background:var(--panel);
 .ctx-key .cat{background:var(--cc);color:var(--ct);padding:2px 6px;border-radius:3px;font-weight:700;
   display:inline-flex;gap:6px;align-items:center;border:0;font:inherit;cursor:pointer;opacity:1;transition:opacity .15s}
 .ctx-key .cat[aria-pressed="false"]{opacity:.32}
-.ctx-key .cat svg path{fill:var(--ct)!important;stroke:none!important}
+.ctx-key .cat svg:not(.icn) path{fill:var(--ct)!important;stroke:none!important}
 
 .tip{position:fixed;pointer-events:none;z-index:9;background:var(--ink);color:var(--panel);font:400 12px/1.45 var(--f-mono);padding:8px 10px;border-radius:3px;max-width:280px;opacity:0;transition:opacity .12s}
 .tip b{font-weight:600}
@@ -358,6 +358,419 @@ table.data tbody tr{cursor:pointer}
 
 .traj{fill:none;stroke-linecap:round}
 @media (prefers-reduced-motion:reduce){.traj{transition:none!important}}
+
+/* =====================================================================
+   DESIGN LAYER v2  (layout, spacing, type hierarchy, cards)
+   Appended after the original rules so every selector/JS hook is intact.
+   Spacing scale: 4 · 8 · 12 · 16 · 24 · 32 · 48.  Radii: 6 / 12.
+   Type scale:    display 40/800 · section 18/700 · card title 15/700
+                  body 14/400 · label 12/600 · caption 11.5/500
+   ===================================================================== */
+:root{
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px;
+  --r-sm:6px; --r-lg:12px;
+  --card-bd:1px solid var(--rule);
+  --card-sh:0 1px 2px rgba(16,23,29,.04),0 4px 16px rgba(16,23,29,.05);
+  --t-display:800 clamp(28px,3.4vw,40px)/1.1 var(--f-display);
+  --t-section:700 18px/1.3 var(--f-display);
+  --t-card:700 15px/1.35 var(--f-display);
+  --t-body:400 14px/1.6 var(--f-body);
+  --t-label:600 12px/1.3 var(--f-body);
+  --t-cap:500 11.5px/1.45 var(--f-body);
+}
+:root[data-theme="dark"]{--card-sh:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--card-sh:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25)}}
+
+/* ---- page frame ---- */
+body{font:var(--t-body)}
+.wrap{max-width:1440px;padding-inline:clamp(16px,3vw,40px);padding-block:var(--s-5) var(--s-7);gap:var(--s-5)}
+header{padding-bottom:var(--s-2);gap:var(--s-2) var(--s-5)}
+h1{font:var(--t-display);letter-spacing:-.02em}
+h2{font:var(--t-section);text-transform:none;letter-spacing:-.005em}
+h3{font:var(--t-card);color:var(--ink);letter-spacing:0}
+.topbar{gap:var(--s-2)}
+.topbar button{padding:var(--s-2) var(--s-3);font:var(--t-label);border-radius:var(--r-sm)}
+.topbar .seg2{border-radius:var(--r-sm)}
+.topbar .seg2 button{padding:var(--s-2) var(--s-3)}
+
+/* ---- generic card ---- */
+.mapbox,.log,.ledger,.explorer,.notes{border:var(--card-bd);border-radius:var(--r-lg);background:var(--panel);box-shadow:var(--card-sh)}
+
+/* ---- hero: map card + log card on one 2-column grid ---- */
+.stage{border:0;background:transparent;gap:var(--s-5);grid-template-columns:minmax(0,1fr) minmax(340px,400px);align-items:stretch}
+.mapbox{aspect-ratio:auto;max-height:none;max-width:none;width:100%;margin:0;border-right:var(--card-bd);
+  height:clamp(520px,calc(100vh - 150px),820px);background:var(--sea);overflow:hidden}
+.log{overflow:hidden;height:clamp(520px,calc(100vh - 150px),820px)}
+@media (min-width:981px){.log{position:relative;display:block}.loginner{position:absolute;inset:0}}
+@media (max-width:980px){
+  .stage{grid-template-columns:minmax(0,1fr)}
+  .mapbox{height:min(72vw,560px);min-height:360px;max-height:none;max-width:none;border-bottom:var(--card-bd)}
+  .log{height:auto;min-height:480px}
+  .loginner{position:static;height:auto}
+}
+.layers{left:var(--s-4);top:56px}
+.layers>button,.layers .lbody{border-radius:var(--r-sm);padding:var(--s-2) var(--s-3);
+  background:color-mix(in srgb,var(--panel) 82%,transparent)}
+.layers .lbody{padding:var(--s-3) var(--s-4);min-width:220px}
+.layers h5{margin:var(--s-3) 0 var(--s-1)}
+.layers label{padding:3px 0}
+.mapctl{right:var(--s-4);top:var(--s-4);gap:var(--s-2)}
+.mapctl button{border-radius:var(--r-sm)}
+.legend,.legtab,.maphint,.mapcap{border-radius:var(--r-sm)}
+.legend{left:var(--s-4);bottom:var(--s-4);padding:var(--s-3);gap:var(--s-2)}
+.legtab{left:var(--s-4);bottom:var(--s-4)}
+.maphint{right:var(--s-4);bottom:var(--s-4)}
+
+/* ---- side card: tabs, header, KPIs, list ---- */
+.tabs{padding:var(--s-2) var(--s-2) 0;gap:var(--s-1);border-bottom:var(--card-bd);background:transparent}
+.tab{flex:1;border:0;border-radius:var(--r-sm) var(--r-sm) 0 0;padding:var(--s-3) var(--s-2);font:var(--t-label);color:var(--ink-3)}
+.tab:hover{color:var(--ink)}
+.tab.on{background:transparent;color:var(--ink);box-shadow:inset 0 -2px 0 var(--inside)}
+.log-head{padding:var(--s-4) var(--s-5) var(--s-3);gap:var(--s-3);border-bottom:0}
+.month b{font:800 34px/1 var(--f-display)}
+.month{height:auto;overflow:visible}
+.hos{gap:2px}
+.hrow{height:auto;font:var(--t-cap);line-height:1.6}
+.controls{gap:var(--s-2)}
+button,.seg label,select{border-radius:var(--r-sm);font:var(--t-label);padding:var(--s-2) var(--s-3)}
+button.primary{min-width:88px}
+.kpis{margin:0 var(--s-5) var(--s-3);border:var(--card-bd);border-radius:var(--r-sm);overflow:hidden;gap:0;background:var(--bg)}
+.kpi{padding:var(--s-3) var(--s-4);gap:var(--s-1);border-color:var(--rule)}
+.kpi .v{font:800 22px/1 var(--f-display)}
+.kpi .l{font:var(--t-cap);letter-spacing:0;text-transform:none;color:var(--ink-3)}
+.events{padding:var(--s-2) var(--s-5) var(--s-5);gap:0}
+.ev{padding:var(--s-3) var(--s-2);margin:0 calc(var(--s-2)*-1);border-bottom:1px solid var(--rule);border-radius:var(--r-sm);gap:var(--s-1) var(--s-3)}
+.ev:last-child{border-bottom:0}
+.ev:hover{background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.ev.sel{box-shadow:none;background:color-mix(in srgb,var(--inside) 8%,transparent)}
+.ev .n{border-color:transparent;background:var(--bg);color:var(--ink-2)}
+.ev .t{font:700 14px/1.35 var(--f-body)}
+.ev .m{font:var(--t-cap)}
+.chip{border-radius:var(--r-sm);padding:3px var(--s-2);margin-right:var(--s-1);font:600 10.5px/1.3 var(--f-body);letter-spacing:.03em}
+.daygrp{margin-top:var(--s-3);padding:0}
+.det,.ystat{padding:var(--s-5);gap:var(--s-5)}
+.det-hd{padding-bottom:var(--s-4)}
+.det dt,.det dd{padding:var(--s-2) 0}
+.det dt{font:var(--t-label);text-transform:none;letter-spacing:0}
+.geo-head{padding:var(--s-4) var(--s-5);gap:var(--s-3)}
+.geo-list{padding:var(--s-1) var(--s-5) var(--s-5)}
+.geo-it{margin:var(--s-2) 0;padding:var(--s-3);border-radius:var(--r-sm);border-left-width:4px}
+.geo-filters{gap:var(--s-2)}
+.geo-filters button{font:600 11px/1 var(--f-body);padding:var(--s-1) var(--s-2);border-radius:var(--r-sm)}
+.geo-filters .geo-all{font-size:11px}
+.statgrid{border:0;background:transparent;gap:var(--s-2)}
+.statgrid div{background:var(--bg);border-radius:var(--r-sm);padding:var(--s-3) var(--s-4)}
+
+/* ---- ledger (timeline) card ---- */
+.ledger{padding:var(--s-5);gap:var(--s-4)}
+.ledger-top{gap:var(--s-4)}
+.ledger-ctl{gap:var(--s-4);row-gap:var(--s-2)}
+.bandctl button,.tzoom button{padding:var(--s-1) var(--s-3);font:var(--t-label)}
+.seg label:first-of-type{border-radius:var(--r-sm) 0 0 var(--r-sm)}
+.seg label:last-of-type{border-radius:0 var(--r-sm) var(--r-sm) 0}
+.ledger-ctl .seg label{padding:var(--s-1) var(--s-3);font-size:12px}
+.ctx-key{gap:var(--s-2) var(--s-3);font:var(--t-cap)}
+#catKey .cat,.ctx-key .cat{border-radius:var(--r-sm);padding:3px var(--s-2);font-size:11px}
+.tlwrap{border-top:1px solid var(--rule);padding-top:var(--s-3)}
+
+/* ---- data explorer card: light, airy table ---- */
+.explorer{overflow:hidden}
+.exp-top{padding:var(--s-5);gap:var(--s-4);border-bottom:1px solid var(--rule)}
+.exp-row{gap:var(--s-4)}
+.fld{gap:var(--s-1)}
+.fld label{font:var(--t-label);color:var(--ink-2)}
+.fld select,.fld input{border-radius:var(--r-sm);padding:var(--s-2) var(--s-3);font:500 13px/1.2 var(--f-body);background:var(--panel)}
+.chk{font:var(--t-label);padding-bottom:var(--s-2)}
+.exp-count{font:var(--t-label);color:var(--ink-3)}
+.tblwrap{max-height:560px;padding:0 var(--s-3)}
+table.data{font:400 13px/1.45 var(--f-body);border-collapse:separate;border-spacing:0}
+table.data th{background:var(--panel);padding:var(--s-3) var(--s-4);border-bottom:1px solid var(--rule);
+  font:600 11.5px/1.3 var(--f-body);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
+table.data th:hover{color:var(--ink)}
+table.data td{padding:var(--s-3) var(--s-4);border-bottom:1px solid color-mix(in srgb,var(--rule) 55%,transparent);color:var(--ink-2)}
+table.data td.nm{font-size:13.5px;font-weight:600}
+table.data tbody tr:last-child td{border-bottom:0}
+table.data tbody tr:hover td{background:color-mix(in srgb,var(--ink) 4%,transparent)}
+table.data tbody tr:hover td:first-child{border-radius:var(--r-sm) 0 0 var(--r-sm)}
+table.data tbody tr:hover td:last-child{border-radius:0 var(--r-sm) var(--r-sm) 0}
+.vd{border:0;border-radius:var(--r-sm);padding:3px var(--s-2);background:color-mix(in srgb,currentColor 11%,transparent)}
+.exp-foot{padding:var(--s-4) var(--s-5);font:var(--t-cap)}
+
+/* ---- notes / sources card ---- */
+.notes{padding:var(--s-6);gap:var(--s-6) var(--s-7)}
+.notes section{gap:var(--s-3)}
+.notes p,.notes li{font:var(--t-body);max-width:68ch}
+.notes .src h3{margin:var(--s-4) 0 0;font:var(--t-card);color:var(--ink)}
+.notes .src p{font-size:13px}
+.credit{margin:0;padding-top:var(--s-4);font:var(--t-cap)}
+.tip{border-radius:var(--r-sm)}
+@media (max-width:640px){.mapbox{height:112vw;min-height:420px}.legend{max-height:42%;overflow-y:auto}.wrap{gap:var(--s-4)}.ledger,.notes,.exp-top{padding:var(--s-4)}}
+
+/* =====================================================================
+   DESIGN LAYER v3: right drawer, launch list, compact stats, filters
+   ===================================================================== */
+:root{--stage-h:clamp(520px,calc(100vh - 150px),820px)}
+.stage{align-items:start;grid-template-columns:minmax(0,1fr) minmax(320px,380px)}
+.stage.dw-open{grid-template-columns:minmax(0,1fr) 340px 380px}
+.mapbox{height:var(--stage-h)}
+.log{height:auto;display:flex;flex-direction:column}
+.loginner{position:static!important;display:flex;flex-direction:column;min-height:0;height:auto;overflow:visible}
+.log[data-tab="detail"],.log[data-tab="ctx"]{height:var(--stage-h)}
+.log[data-tab="detail"] .loginner,.log[data-tab="ctx"] .loginner{height:100%;overflow:hidden}
+.pane.lst{min-height:0;flex:1}
+@media (max-width:1199px){.stage.dw-open{grid-template-columns:minmax(0,1fr) minmax(320px,380px)}}
+@media (max-width:980px){
+  .stage,.stage.dw-open{grid-template-columns:minmax(0,1fr)}
+  .log[data-tab="detail"],.log[data-tab="ctx"]{height:min(var(--stage-h),80vh)}
+}
+
+/* tabs: Year Stats opens the drawer */
+.tab.dwtab::after{content:" ›";color:var(--ink-3)}
+.tab.dwtab.on{box-shadow:inset 0 -2px 0 var(--outside)}
+
+/* month log: counts stay here, details live in the drawer */
+.evsum{padding:var(--s-1) var(--s-5) var(--s-5)}
+.evbtn{width:100%;display:flex;justify-content:space-between;align-items:center;padding:var(--s-3) var(--s-4);
+  font:700 13px/1.3 var(--f-body);background:var(--bg);border-color:var(--rule)}
+.evbtn:hover{border-color:var(--ink-3)}
+
+/* drawer */
+.drawer{display:none;flex-direction:column;height:var(--stage-h);border:var(--card-bd);border-radius:var(--r-lg);
+  background:var(--panel);box-shadow:var(--card-sh);overflow:hidden;min-width:0}
+.stage.dw-open .drawer{display:flex}
+.drawer-hd{display:flex;align-items:center;gap:var(--s-2);padding:var(--s-3) var(--s-4);border-bottom:var(--card-bd);flex:none}
+.drawer-hd h3{margin:0;flex:1;font:var(--t-card);color:var(--ink)}
+.dwb{padding:var(--s-1) var(--s-2);min-width:30px;font:600 12px/1 var(--f-body);background:transparent;border-color:transparent;color:var(--ink-2)}
+.dwb:hover{background:var(--bg);border-color:var(--rule)}
+.dwb[hidden]{display:none}
+.drawer-body{flex:1;min-height:0;overflow:auto}
+.drawer .events{overflow:visible;min-height:0;flex:none;padding:var(--s-3) var(--s-5) var(--s-5)}
+.drawer .det,.drawer .ystat{overflow:visible;flex:none;min-height:0}
+@media (max-width:1199px){
+  .drawer{position:fixed;top:0;right:0;bottom:0;height:auto;width:min(420px,100vw);z-index:30;border-radius:0;
+    box-shadow:-12px 0 40px rgba(0,0,0,.22)}
+}
+
+/* launch list */
+.lscroll{overflow:auto;height:100%;position:relative;padding:0 var(--s-2) var(--s-4)}
+.lyr{position:sticky;top:0;z-index:2;display:flex;align-items:baseline;gap:var(--s-2);padding:var(--s-3) var(--s-3) var(--s-2);
+  background:var(--panel);border-bottom:1px solid var(--rule)}
+.lyr b{font:800 18px/1 var(--f-display)}
+.lyr span,.lmo span{font:var(--t-cap);color:var(--ink-3)}
+.lmo{display:flex;align-items:baseline;gap:var(--s-2);padding:var(--s-3) var(--s-3) var(--s-1)}
+.lmo b{font:var(--t-label);color:var(--ink-2)}
+.lmo i{flex:1;height:1px;background:var(--rule)}
+.lrow{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:var(--s-3);align-items:center;width:100%;text-align:left;
+  padding:var(--s-2) var(--s-3);border:0;border-radius:var(--r-sm);background:transparent;font:var(--t-body);cursor:pointer}
+.lrow:hover{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.lrow.sel{background:color-mix(in srgb,var(--inside) 9%,transparent);box-shadow:inset 3px 0 0 var(--inside)}
+.lrow .ld{font:600 12px/1.3 var(--f-body);color:var(--ink-3);font-variant-numeric:tabular-nums}
+.lrow .lt{font:600 13.5px/1.3 var(--f-body);color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .lt small{display:block;font:var(--t-cap);color:var(--ink-3);overflow:hidden;text-overflow:ellipsis}
+
+/* year stats: compact */
+.ystat{padding:var(--s-4) var(--s-5) var(--s-5);gap:var(--s-4)}
+.ystat .big{display:flex;align-items:baseline;gap:var(--s-1) var(--s-2);flex-wrap:wrap}
+.ystat .big b{font:800 27px/1 var(--f-display)}
+.ystat .big span{font:var(--t-cap);letter-spacing:0;text-transform:none;color:var(--ink-3)}
+.ystat .big i{font-style:normal;color:var(--rule);font-size:20px;margin:0 var(--s-1)}
+.ystat .rank{margin:0;font:var(--t-cap);color:var(--ink-2)}
+.ychart{display:grid;grid-template-columns:70% minmax(0,1fr);gap:var(--s-3);align-items:end}
+.ymini{width:100%;aspect-ratio:320/116}
+.ymini text{font-size:12.5px}
+.ystat .ykey{margin:0;display:grid;gap:var(--s-1);font:var(--t-cap);align-self:center}
+.ystat .ykey span{white-space:normal;align-items:flex-start}
+.statgrid{grid-template-columns:repeat(3,1fr);gap:var(--s-2)}
+.statgrid div{padding:var(--s-2) var(--s-3);gap:1px}
+.statgrid b{font:700 18px/1.1 var(--f-display)}
+.statgrid span{font:var(--t-cap);letter-spacing:0;text-transform:none}
+.tbl2{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-4)}
+.tbl2 h4,.ystat h4{margin:0 0 var(--s-1);font:var(--t-label);letter-spacing:0;text-transform:none;color:var(--ink-2)}
+.ystat table{font:400 12px/1.35 var(--f-body)}
+.ystat td{padding:var(--s-1) var(--s-2) var(--s-1) 0;border-bottom:1px solid var(--rule)}
+.ystat th{padding:0 var(--s-2) var(--s-1) 0;font:600 10.5px/1.3 var(--f-body)}
+
+/* map layers: two columns */
+.layers.open .lbody{display:grid;grid-template-columns:repeat(2,minmax(150px,1fr));column-gap:var(--s-5);align-items:start}
+.layers .lcol{min-width:0}
+.layers .lcol:nth-of-type(n+3){margin-top:var(--s-1)}
+.layers .lreset{grid-column:1/-1;margin-top:var(--s-3)}
+@media (max-width:480px){.layers.open .lbody{grid-template-columns:1fr}}
+
+/* timeline controls follow the card width */
+.ledger{container-type:inline-size}
+.ledger-top{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--s-3) var(--s-5)}
+.ledger-ctl{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:var(--s-3) var(--s-5)}
+.bandctl{flex-wrap:wrap;gap:var(--s-2)}
+.ledger-top #catKey{grid-column:1/-1;justify-content:flex-start}
+@container (max-width:1000px){
+  .ledger-top{grid-template-columns:minmax(0,1fr)}
+  .ledger-ctl{justify-content:flex-start}
+}
+@container (max-width:620px){
+  .ledger-ctl{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-3)}
+}
+
+/* explorer filters: grouped, fluid */
+.exp-top{gap:var(--s-4)}
+.exp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--s-3)}
+.fgrp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s-3);padding:var(--s-4);
+  border:1px solid var(--rule);border-radius:var(--r-sm);background:color-mix(in srgb,var(--bg) 55%,var(--panel));align-content:start}
+.fgrp .fld{min-width:0}
+.fgrp .fld.wide{grid-column:1/-1}
+.fld select,.fld input{width:100%;max-width:none}
+.fld.chks{display:flex;flex-wrap:wrap;gap:var(--s-2) var(--s-5)}
+.fld.chks .chk{padding-bottom:0}
+.exp-bar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s-3) var(--s-4)}
+.exp-bar .grow{flex:1 1 240px;min-width:0}
+.exp-act{display:inline-flex;gap:var(--s-2)}
+.exp-bar .exp-count{margin-left:auto;padding-bottom:var(--s-2)}
+
+/* geo note */
+.geo-note{margin:var(--s-5) 0 0;font:var(--t-cap);color:var(--ink-3);max-width:62ch}
+.fld.chks .chk,.fld.chks .chk span{white-space:nowrap}
+
+/* =====================================================================
+   DESIGN LAYER v4
+   ===================================================================== */
+:root{--stage-h:clamp(500px,calc(100vh - 200px),700px)}
+.stage{gap:12px}
+.stage.dw-open{grid-template-columns:minmax(0,1fr) 330px 360px}
+.tab.dwtab::after{content:none}
+.stage.dw-open .evsum{display:none}
+.lyr{margin:0 calc(var(--s-2)*-1);padding:var(--s-2) var(--s-5);border-bottom:0;
+  background:color-mix(in srgb,var(--inside) 14%,var(--panel));color:var(--ink)}
+.lyr b{color:var(--ink)}.lyr span{color:var(--ink-2)}
+.geo-list{padding:0 0 var(--s-5)}
+.geo-yr{position:sticky;top:0;z-index:2;margin:var(--s-3) 0 var(--s-1);padding:var(--s-2) var(--s-5);
+  background:color-mix(in srgb,var(--ink) 9%,var(--panel));color:var(--ink);font:700 12px/1.2 var(--f-body);letter-spacing:.04em}
+.geo-list>.geo-yr:first-child{margin-top:0}
+.geo-it{margin:var(--s-2) var(--s-5)}
+.geo-note{margin:var(--s-5) var(--s-5) 0}
+.geo-list>.none{margin:var(--s-4) var(--s-5)}
+.geo-head{gap:var(--s-2)}
+.geo-sum{padding:0;margin-top:-6px}
+table.data th{background:color-mix(in srgb,var(--inside) 13%,var(--panel));color:var(--ink);border-bottom:1px solid color-mix(in srgb,var(--inside) 28%,var(--rule))}
+table.data th:hover{color:var(--ink)}
+.legtab{cursor:pointer}
+.legend.show{pointer-events:auto;cursor:pointer}
+.icn{flex:none;display:inline-block;vertical-align:middle;overflow:visible}
+.ctx-key .cat,.geo-filters button{align-items:center}
+.geo-filters button[aria-pressed="false"] svg.icn,.ctx-key .cat[aria-pressed="false"] svg.icn{filter:grayscale(1);opacity:.55}
+/* timeline header: row 1 title + scope + zoom, row 2 leaders, row 3 categories */
+.ledger-top{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:var(--s-3) var(--s-4)}
+.ledger-ctl{display:contents}
+.ledger-top>h3{grid-column:1;grid-row:1;margin:0}
+.ledger-ctl .seg{grid-column:2;grid-row:1;justify-self:end}
+.ledger-ctl .tzoom{grid-column:3;grid-row:1;justify-self:end}
+.ledger-ctl .bandctl{grid-column:1/-1;grid-row:2;justify-self:start}
+.ledger-top #catKey{grid-column:1/-1;grid-row:3;justify-content:flex-start}
+@container (max-width:620px){
+  .ledger-top{grid-template-columns:minmax(0,1fr) auto}
+  .ledger-top>h3{grid-column:1/-1}
+  .ledger-ctl .seg{grid-column:1;grid-row:2;justify-self:start}
+  .ledger-ctl .tzoom{grid-column:2;grid-row:2}
+  .ledger-ctl .bandctl{grid-row:3}
+  .ledger-top #catKey{grid-row:4}
+}
+.tblwrap{padding:0}
+table.data th:first-child,table.data td:first-child{padding-left:var(--s-5)}
+table.data th:last-child,table.data td:last-child{padding-right:var(--s-5)}
+.ychart{grid-template-columns:1fr;gap:var(--s-2)}
+.ymini{width:100%;aspect-ratio:320/170}
+.ystat .ykey{display:flex;flex-wrap:wrap;gap:var(--s-1) var(--s-3);font:500 10px/1.3 var(--f-body);color:var(--ink-3)}
+.ystat .ykey span{white-space:nowrap}
+.tbl2 h4,.ystat h4{margin-bottom:var(--s-2)}
+.ymini text{font-size:11px}
+
+/* side panel: same row and height as the map and main panel. With no room it covers the main panel. */
+.mapbox{grid-column:1;grid-row:1}
+.log{grid-column:2;grid-row:1}
+.stage.dw-open .log{grid-column:2}
+.drawer{grid-column:3;grid-row:1}
+@media (max-width:1199px){
+  .stage.dw-open{grid-template-columns:minmax(0,1fr) minmax(320px,380px)}
+  .drawer{position:relative;grid-column:2;grid-row:1;top:auto;right:auto;bottom:auto;width:auto;height:var(--stage-h);
+    z-index:5;border-radius:var(--r-lg);box-shadow:var(--card-sh)}
+  .stage.dw-open .log{visibility:hidden}
+}
+@media (max-width:980px){
+  .stage,.stage.dw-open{grid-template-columns:minmax(0,1fr)}
+  .mapbox{grid-column:1;grid-row:1}
+  .log,.drawer,.stage.dw-open .drawer{grid-column:1;grid-row:2}
+  .drawer{height:min(var(--stage-h),80vh)}
+}
+
+/* =====================================================================
+   MOBILE (<=640px): map pinned on top, panels flow below, details in a bottom sheet
+   ===================================================================== */
+@media (max-width:640px){
+  .wrap{padding-inline:10px;gap:var(--s-4)}
+  header{gap:var(--s-2)}
+  h1{font-size:26px}
+  .stage,.stage.dw-open{display:block}
+  .mapbox{position:sticky;top:6px;z-index:12;height:44vh;min-height:280px;max-height:none;margin-bottom:10px;border-radius:var(--r-lg)}
+  .log,.stage.dw-open .log{visibility:visible;height:auto}
+  .log[data-tab="detail"],.log[data-tab="ctx"]{height:min(62vh,560px)}
+  .drawer,.stage.dw-open .drawer{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;height:min(54vh,520px);
+    z-index:40;border-radius:18px 18px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.28)}
+  .drawer-hd{position:relative;padding-top:var(--s-4)}
+  .drawer-hd::before{content:"";position:absolute;left:50%;top:6px;width:38px;height:4px;margin-left:-19px;border-radius:2px;background:var(--rule)}
+  .dwb{min-width:40px;min-height:40px;font-size:15px}
+  .tab{padding:var(--s-3) 2px;font-size:11.5px}
+  /* date + leaders side by side, controls on two tidy rows */
+  .log-head{grid-template-columns:auto minmax(0,1fr);align-items:start;gap:var(--s-2) var(--s-4);padding:var(--s-4) var(--s-4) var(--s-3)}
+  .month b{font-size:30px}
+  .hos{gap:1px}
+  .hrow{font-size:10.5px;line-height:1.5}
+  .controls{grid-column:1/-1;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--s-2)}
+  .controls #prev{grid-column:span 2}
+  .controls #play{grid-column:span 8}
+  .controls #next{grid-column:span 2}
+  .controls #jump{grid-column:span 5}
+  .controls>span:nth-of-type(1){grid-column:span 3;margin:0!important;display:flex!important}
+  .controls>span:nth-of-type(1) label{display:none}
+  .controls>span:nth-of-type(1) select{width:100%}
+  .controls>.seg{grid-column:span 4;margin:0!important;display:flex}
+  .controls>.seg label{flex:1;text-align:center}
+  .controls button,.controls select,.controls .seg label{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+  .kpis{margin:0 var(--s-4) var(--s-3)}
+  .evsum{padding:var(--s-1) var(--s-4) var(--s-4)}
+  .ledger,.notes,.exp-top{padding:var(--s-4)}
+  .exp-grid{grid-template-columns:1fr}
+  .fgrp{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .layers.open .lbody{grid-template-columns:1fr}
+  .tblwrap{overflow-x:auto}
+}
+
+/* Map-layers button stays reachable at every width */
+@media (max-width:640px){
+  .layers{position:absolute;left:10px;top:48px;right:auto;padding:0;z-index:14}
+  .layers.open .lbody{max-height:calc(44vh - 96px);overflow:auto;width:min(290px,calc(100vw - 40px))}
+}
+html[lang="ja"] .hrow{white-space:normal;height:auto;overflow:visible}
+
+/* detail hints: own line, "*" marker, half size */
+#paneDetail dd .u{display:block;margin-top:2px;font-size:max(7px,.5em);line-height:1.5;color:var(--ink-3)}
+#paneDetail dd .u::before{content:"* "}
+#paneDetail .detnav .ix{font-size:max(7px,.5em)}
+#paneDetail .detnav .ix::before{content:"* "}
+#paneDetail dd .u{font-size:10px}
+@media (max-width:640px){#paneDetail dd .u{font-size:9px}}
+#paneDetail .detnav .ix{font-size:10px}
+#paneDetail dd{white-space:pre-line}
+html[lang="ko"] .kpi .l,html[lang="ko"] .kpi .l *{word-break:keep-all;overflow-wrap:normal}
+#paneDetail dt{white-space:pre-line}
+
+/* ---- line breaking for Korean / Japanese: break between words / phrases, never inside one ---- */
+html[lang="ko"] body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+html[lang="ja"] body{word-break:auto-phrase;overflow-wrap:break-word;line-break:strict}
+html[lang="ko"] .tab,html[lang="ja"] .tab{text-wrap:balance}
+html[lang="ko"] .nm,html[lang="ja"] .nm,html[lang="ko"] .sb,html[lang="ja"] .sb,
+html[lang="ko"] .kpi .l,html[lang="ja"] .kpi .l,html[lang="ko"] .ystat h4,html[lang="ja"] .ystat h4{text-wrap:balance}
+html[lang="ko"] dd,html[lang="ja"] dd,html[lang="ko"] .geo-list a,html[lang="ja"] .geo-list a{text-wrap:pretty}
+html[lang="ja"] .kpi .l{white-space:normal}
+#paneDetail dd{min-width:0;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -376,27 +789,27 @@ table.data tbody tr{cursor:pointer}
 
   <div class="stage">
     <div class="mapbox">
-      <svg id="map" viewBox="0 0 900 760" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Map of the East Sea / Sea of Japan with North Korean missile trajectories for the selected month"></svg>
+      <svg id="map" viewBox="0 0 900 760" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Map of the East Sea / Sea of Japan with North Korean missile trajectories for the selected month"></svg>
       <div class="layers" id="layers">
         <button type="button" id="layBtn" aria-expanded="false" data-i18n="lay.btn">⊞ Map layers</button>
         <div class="lbody" id="layBody">
-          <h5 data-i18n="lay.eez">Exclusive economic zones</h5>
+          <div class="lcol"><h5 data-i18n="lay.eez">Exclusive economic zones</h5>
           <label><input type="checkbox" id="lyJP" checked><span data-i18n="lay.jp">Japan (base layer)</span></label>
           <label><input type="checkbox" id="lyKR"><span data-i18n="lay.kr">South Korea</span></label>
           <label><input type="checkbox" id="lyKP"><span data-i18n="lay.kp">North Korea</span></label>
           <label><input type="checkbox" id="lyCN"><span data-i18n="lay.cn">China</span></label>
           <label><input type="checkbox" id="lyRU"><span data-i18n="lay.ru">Russia</span></label>
-          <h5 data-i18n="lay.mil">Military sites (city level)</h5>
+          </div><div class="lcol"><h5 data-i18n="lay.mil">Military sites (city level)</h5>
           <label><input type="checkbox" id="mbKR"><span data-i18n="lay.mkr">South Korea</span></label>
           <label><input type="checkbox" id="mbJP"><span data-i18n="lay.mjp">Japan &amp; USFJ</span></label>
           <label><input type="checkbox" id="mbKP"><span data-i18n="lay.mkp">North Korea</span></label>
           <label><input type="checkbox" id="mbCN"><span data-i18n="lay.mcn">China</span></label>
           <label><input type="checkbox" id="mbRU"><span data-i18n="lay.mru">Russia</span></label>
-          <h5 data-i18n="lay.sea">Sea use</h5>
+          </div><div class="lcol"><h5 data-i18n="lay.sea">Sea use</h5>
           <label><input type="checkbox" id="lyPort"><span data-i18n="lay.port">Major ports</span></label>
           <label><input type="checkbox" id="lyLane"><span data-i18n="lay.lane">Shipping lanes &amp; straits</span></label>
-          <h5 data-i18n="lay.unc">Uncertainty</h5>
-          <label><input type="checkbox" id="lyErr" checked><span data-i18n="lay.err">Error ellipse on estimates</span></label>
+          </div><div class="lcol"><h5 data-i18n="lay.unc">Uncertainty</h5>
+          <label><input type="checkbox" id="lyErr" checked><span data-i18n="lay.err">Error ellipse on estimates</span></label></div>
           <button type="button" id="layReset" class="lreset" data-i18n="lay.reset">Clear all · back to Japan EEZ</button>
         </div>
       </div>
@@ -428,12 +841,12 @@ table.data tbody tr{cursor:pointer}
         </button>
       </div>
     </div>
-    <aside class="log">
+    <aside class="log" data-tab="log">
      <div class="loginner">
       <div class="tabs" role="tablist" aria-label="Side panel view">
         <button class="tab on" id="tabLog" role="tab" aria-selected="true" aria-controls="paneLog" data-i18n="tab.log">Month Log</button>
-        <button class="tab" id="tabDetail" role="tab" aria-selected="false" aria-controls="paneDetail" data-i18n="tab.det">Launch Detail</button>
-        <button class="tab" id="tabStats" role="tab" aria-selected="false" aria-controls="paneStats" data-i18n="tab.stat">Year Stats</button>
+        <button class="tab" id="tabDetail" role="tab" aria-selected="false" aria-controls="paneList" data-i18n="tab.det">Launch Detail</button>
+        <button class="tab dwtab" id="tabStats" role="tab" aria-selected="false" aria-controls="paneStats" data-i18n="tab.stat">Year Stats</button>
         <button class="tab" id="tabCtx" role="tab" aria-selected="false" aria-controls="paneCtx" data-i18n="tab.ctx">Geopolitical Events</button>
       </div>
       <div class="pane" id="paneLog" role="tabpanel" aria-live="polite">
@@ -452,7 +865,7 @@ table.data tbody tr{cursor:pointer}
           <button id="jump" title="Jump to the next month with a launch" data-i18n="btn.next">Next launch ⇥</button>
           <span style="display:inline-flex;gap:6px;align-items:center;margin-left:4px">
             <label for="speed" class="eyebrow" data-i18n="lbl.speed">Speed</label>
-            <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+            <select id="speed"><option value="0.25">0.5×</option><option value="0.5" selected>1×</option><option value="1">2×</option><option value="2">4×</option></select>
           </span>
           <span class="seg" role="radiogroup" aria-label="Step by month or by year" style="margin-left:4px">
             <input type="radio" name="gran" id="granM" value="month" checked><label for="granM" data-i18n="lbl.month">Month</label>
@@ -466,10 +879,9 @@ table.data tbody tr{cursor:pointer}
         <div class="kpi"><span class="v in" id="kIn">0</span><span class="l" data-i18n="kpi.in">Inside Japan's EEZ, cumulative</span></div>
         <div class="kpi"><span class="v" id="kOver">0</span><span class="l" data-i18n="kpi.over">Overflights of Japan, cumulative</span></div>
       </div>
-      <div class="events" id="events"></div>
+      <div class="evsum"><button type="button" id="openMonth" class="evbtn"></button></div>
       </div>
-      <div class="pane det" id="paneDetail" role="tabpanel" hidden></div>
-      <div class="pane ystat" id="paneStats" role="tabpanel" hidden></div>
+      <div class="pane lst" id="paneList" role="tabpanel" hidden></div>
       <div class="pane geo" id="paneCtx" role="tabpanel" hidden>
         <div class="geo-head">
           <div class="geo-filters" id="geoCats" role="group" aria-label="Event categories">
@@ -482,6 +894,18 @@ table.data tbody tr{cursor:pointer}
         <div class="geo-list" id="geoList"></div>
       </div>
      </div>
+    </aside>
+    <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Details">
+      <div class="drawer-hd">
+        <button type="button" id="dwBack" class="dwb" aria-label="Back" hidden>◀</button>
+        <h3 id="dwTitle"></h3>
+        <button type="button" id="dwClose" class="dwb" aria-label="Close">✕</button>
+      </div>
+      <div class="drawer-body">
+        <div class="pane" id="dwMonth" role="tabpanel"><div class="events" id="events"></div></div>
+        <div class="pane det" id="paneDetail" role="tabpanel" hidden></div>
+        <div class="pane ystat" id="paneStats" role="tabpanel" hidden></div>
+      </div>
     </aside>
   </div>
 
@@ -511,7 +935,7 @@ table.data tbody tr{cursor:pointer}
       </div>
       <div class="ctx-key" id="catKey"></div>
     </div>
-    <div class="tlwrap"><svg id="tl" viewBox="0 0 1200 238" tabindex="0" role="slider" aria-label="Timeline month selector: stacked bars are missiles, the line is launch occasions" aria-valuetext=""></svg></div>
+    <div class="tlwrap"><svg id="tl" viewBox="0 0 1200 252" tabindex="0" role="slider" aria-label="Timeline month selector: stacked bars are missiles, the line is launch occasions" aria-valuetext=""></svg></div>
     <div class="ctx-key tl-key">
       <span class="keynote" data-i18n="tl.hover">* hover a bar or a marker for the figures</span>
       <span><i class="sw in"></i><span data-i18n="tl.k1">Bars: missiles fired, inside Japan's EEZ</span></span>
@@ -523,29 +947,33 @@ table.data tbody tr{cursor:pointer}
 
   <div class="explorer">
     <div class="exp-top">
-      <div style="padding:0">
-        <h3 data-i18n="exp.title">North Korean Missile Launch Tracker</h3>
+      <h3 data-i18n="exp.title">North Korean Missile Launch Tracker</h3>
+      <div class="exp-grid">
+        <div class="fgrp">
+          <span class="fld"><label for="fY1" data-i18n="exp.y1">Year From</label><select id="fY1"></select></span>
+          <span class="fld"><label for="fY2" data-i18n="exp.y2">Year To</label><select id="fY2"></select></span>
+          <span class="fld wide"><label for="fRg" data-i18n="exp.rg">Regime</label><select id="fRg"></select></span>
+        </div>
+        <div class="fgrp">
+          <span class="fld"><label for="fCls" data-i18n="exp.cls">Missile Class</label><select id="fCls"></select></span>
+          <span class="fld"><label for="fMis" data-i18n="exp.mis">Missile Name</label><select id="fMis"></select></span>
+          <span class="fld wide"><label for="fFac" data-i18n="exp.fac">Launch Site</label><select id="fFac"></select></span>
+        </div>
+        <div class="fgrp">
+          <span class="fld"><label for="fEez" data-i18n="exp.eez">EEZ Verdict</label><select id="fEez">
+            <option value="" data-i18n="exp.any">Any</option><option value="in" data-i18n="exp.in">Inside Japan's EEZ</option>
+            <option value="out" data-i18n="exp.out">Outside Japan's EEZ</option><option value="unk" data-i18n="exp.unk">Landing point not published</option>
+            <option value="off" data-i18n="exp.off">MOD official verdict only</option></select></span>
+          <span class="fld"><label for="fSea" data-i18n="exp.sea">Landing Area</label><select id="fSea"></select></span>
+          <span class="fld wide chks">
+            <label class="chk"><input type="checkbox" id="fOver"> <span data-i18n="exp.over">Overflights Only</span></label>
+            <label class="chk"><input type="checkbox" id="fEast"> <span data-i18n="exp.east">Fired Eastward Only</span></label>
+          </span>
+        </div>
       </div>
-      <div class="exp-row">
-        <span class="fld"><label for="fY1" data-i18n="exp.y1">Year From</label><select id="fY1"></select></span>
-        <span class="fld"><label for="fY2" data-i18n="exp.y2">Year To</label><select id="fY2"></select></span>
-        <span class="fld"><label for="fRg" data-i18n="exp.rg">Regime</label><select id="fRg"></select></span>
-        <span class="fld"><label for="fCls" data-i18n="exp.cls">Missile Class</label><select id="fCls"></select></span>
-        <span class="fld"><label for="fMis" data-i18n="exp.mis">Missile Name</label><select id="fMis"></select></span>
-      </div>
-      <div class="exp-row">
-        <span class="fld"><label for="fEez" data-i18n="exp.eez">EEZ Verdict</label><select id="fEez">
-          <option value="" data-i18n="exp.any">Any</option><option value="in" data-i18n="exp.in">Inside Japan's EEZ</option>
-          <option value="out" data-i18n="exp.out">Outside Japan's EEZ</option><option value="unk" data-i18n="exp.unk">Landing point not published</option>
-          <option value="off" data-i18n="exp.off">MOD official verdict only</option></select></span>
-        <span class="fld"><label for="fSea" data-i18n="exp.sea">Landing Area</label><select id="fSea"></select></span>
-        <span class="fld"><label for="fFac" data-i18n="exp.fac">Launch Site</label><select id="fFac"></select></span>
-      </div>
-      <div class="exp-row">
-        <label class="chk"><input type="checkbox" id="fOver"> <span data-i18n="exp.over">Overflights Only</span></label>
-        <label class="chk"><input type="checkbox" id="fEast"> <span data-i18n="exp.east">Fired Eastward Only</span></label>
-        <span class="fld" style="margin-left:auto"><label for="fQ" data-i18n="exp.q">Search</label><input type="search" id="fQ" placeholder="missile, site, date…" data-i18n-ph="exp.ph"></span>
-        <span style="display:inline-flex;gap:8px;padding-bottom:0"><button id="fRst" data-i18n="btn.reset">Reset</button>
+      <div class="exp-bar">
+        <span class="fld grow"><label for="fQ" data-i18n="exp.q">Search</label><input type="search" id="fQ" placeholder="missile, site, date…" data-i18n-ph="exp.ph"></span>
+        <span class="exp-act"><button id="fRst" data-i18n="btn.reset">Reset</button>
         <button id="fApply" class="primary" type="button" data-i18n="btn.apply">Apply</button></span>
         <span class="exp-count" id="fCount"></span>
       </div>
@@ -568,10 +996,8 @@ table.data tbody tr{cursor:pointer}
       <p>Made with Natural Earth. Free vector and raster map data @ <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">naturalearthdata.com</a> — public domain, reaching this page as <a href="https://github.com/topojson/world-atlas" target="_blank" rel="noopener">world-atlas</a> 2.0.2 TopoJSON (ISC, &copy; 2013&ndash;2019 Michael Bostock), from Natural Earth Admin 0 at 1:110m.</p>
       <h3>Code</h3>
       <p>D3 7.9.0, ISC licence, &copy; 2010&ndash;2023 Mike Bostock. TopoJSON Client 3.1.0, ISC licence, &copy; 2012&ndash;2019 Michael Bostock.</p>
-      <h3>Inspiration</h3>
-      <p><b>This page was inspired by a video shared on X in 2026</b> that counted Japanese Ministry of Defense announcements of North Korean missile launches and reached a running total of "233+" by August 2026. What that post contributed is the idea: showing those launches as a map that moves through time. Everything on this page was built separately from it — the dataset, the launch-by-launch reconstruction, the EEZ verdicts and their linkage to individual MOD statements, the context timeline, the wording and all of the code. No frame, figure, graphic, text or data file from the original post is reproduced or re-used here, and the totals on this page deliberately differ from it because a different source is being counted. <span class="num" id="inspoSlot">Original post: credit line and link to be added by the author.</span></p>
-      <h3>The context timeline</h3>
-      <p>Each entry links to the institution that published it — the UN, the CTBTO, the IOC, national governments and two state news agencies. Those are links, not copies: no text from them is reproduced here, and each link carries its publisher's name beside it. Pages marked “Korean” are South Korean government pages; linked Korean government material is published under the <a href="https://www.kogl.or.kr/info/license.do" target="_blank" rel="noopener">Korea Open Government Licence</a>.</p>
+      <h3>Links for event</h3>
+      <p>Each link carries its publisher's name beside it. Pages marked “Korean” are South Korean government pages; linked Korean government material is published under the <a href="https://www.kogl.or.kr/info/license.do" target="_blank" rel="noopener">Korea Open Government Licence</a>.</p>
     </section>
   </div>
   <p class="credit"><span data-i18n="credit">Created by</span> <b>Jihye Yoo</b></p>
@@ -742,15 +1168,25 @@ const PNAME={
   "Jiang Zemin":"江沢民","Hu Jintao":"胡錦濤","Xi Jinping":"習近平"}
 };
 function TP(n){const d=PNAME[LANG];return (d&&d[n])||n;}
+// Japanese: every North / South Korean leader is followed by the katakana reading in brackets
+const KANA={"Kim Il Sung":"キム・イルソン","Kim Jong Il":"キム・ジョンイル","Kim Jong Un":"キム・ジョンウン",
+ "Kim Young-sam":"キム・ヨンサム","Kim Dae-jung":"キム・デジュン","Roh Moo-hyun":"ノ・ムヒョン","Goh Kun (acting)":"コ・ゴン",
+ "Lee Myung-bak":"イ・ミョンバク","Park Geun-hye":"パク・クネ","Hwang Kyo-ahn (acting)":"ファン・ギョアン","Moon Jae-in":"ムン・ジェイン",
+ "Yoon Suk Yeol":"ユン・ソンニョル","Han Duck-soo (acting)":"ハン・ドクス","Choi Sang-mok (acting)":"チェ・サンモク",
+ "Lee Ju-ho (acting)":"イ・ジュホ","Lee Jae-myung":"イ・ジェミョン"};
+function TPK(n){ const b=TP(n); if(LANG!=="ja"||!KANA[n]) return b;
+  const act=/（代行）$/.test(b); return b.replace(/（代行）$/,"")+"（"+KANA[n]+"）"+(act?"（代行）":""); }
 // --- names drawn on the map itself
 const MAPLBL={
- ko:{"China":"중국","Russia":"러시아","N. Korea":"북한","S. Korea":"한국","Japan":"일본",
-  "East Sea / Sea of Japan":"동해 / 일본해","Pacific Ocean":"태평양",
+ ko:{"China":"중국","Russia":"러시아","N. Korea":"북한","S. Korea":"남한","Japan":"일본",
+  "East Sea / Sea of Japan":"동해","Pacific Ocean":"태평양",
   "West Sea / Yellow Sea":"서해 / 황해","East China Sea":"동중국해","Pyongyang":"평양","Seoul":"서울","Tokyo":"도쿄","Beijing":"베이징","Busan":"부산","Incheon":"인천","Ulsan":"울산","Gwangyang":"광양","Mokpo":"목포","Donghae":"동해","Tokyo / Yokohama":"도쿄 / 요코하마","Nagoya":"나고야","Osaka / Kobe":"오사카 / 고베","Hakata (Fukuoka)":"하카타 (후쿠오카)","Niigata":"니가타","Tomakomai":"도마코마이","Maizuru":"마이즈루","Shanghai":"상하이","Ningbo-Zhoushan":"닝보-저우산","Qingdao":"칭다오","Tianjin":"톈진","Dalian":"다롄","Vladivostok":"블라디보스토크","Nampo":"남포","Wonsan":"원산","Rajin (Rason)":"라진 (라선)","Hungnam":"흥남","Korea Strait / Tsushima":"대한해협 / 쓰시마","Tsugaru Strait":"쓰가루 해협","La Perouse (Soya) Strait":"라페루즈(소야) 해협","Miyako Strait":"미야코 해협","Osumi Strait":"오스미 해협","Taiwan Strait":"대만해협","Bashi Channel":"바시 해협"},
  ja:{"China":"中国","Russia":"ロシア","N. Korea":"北朝鮮","S. Korea":"韓国","Japan":"日本",
-  "East Sea / Sea of Japan":"日本海 / 東海","Pacific Ocean":"太平洋",
+  "East Sea / Sea of Japan":"日本海 (Sea of Japan)","Pacific Ocean":"太平洋",
   "West Sea / Yellow Sea":"黄海 / 西海","East China Sea":"東シナ海","Pyongyang":"平壌","Seoul":"ソウル","Tokyo":"東京","Beijing":"北京","Busan":"釜山","Incheon":"仁川","Ulsan":"蔚山","Gwangyang":"光陽","Mokpo":"木浦","Donghae":"東海","Tokyo / Yokohama":"東京・横浜","Nagoya":"名古屋","Osaka / Kobe":"大阪・神戸","Hakata (Fukuoka)":"博多（福岡）","Niigata":"新潟","Tomakomai":"苫小牧","Maizuru":"舞鶴","Shanghai":"上海","Ningbo-Zhoushan":"寧波舟山","Qingdao":"青島","Tianjin":"天津","Dalian":"大連","Vladivostok":"ウラジオストク","Nampo":"南浦","Wonsan":"元山","Rajin (Rason)":"羅津（羅先）","Hungnam":"興南","Korea Strait / Tsushima":"対馬海峡","Tsugaru Strait":"津軽海峡","La Perouse (Soya) Strait":"宗谷海峡","Miyako Strait":"宮古海峡","Osumi Strait":"大隅海峡","Taiwan Strait":"台湾海峡","Bashi Channel":"バシー海峡"}
 };
+Object.assign(MAPLBL.ko,{"Wonju": "원주", "Gyeryong": "계룡", "Seongju": "성주", "Gwangju": "광주", "Suwon": "수원", "Daegu": "대구", "Yecheon": "예천", "Cheongju": "청주", "Gangneung": "강릉", "Chungju": "충주", "Seosan": "서산", "Pyeongtaek": "평택", "Jinhae (Changwon)": "진해 (창원)", "Pohang": "포항", "Seongnam": "성남", "Yokosuka": "요코스카", "Sasebo": "사세보", "Kure": "구레", "Ominato (Mutsu)": "오미나토 (무쓰)", "Chitose": "지토세", "Misawa": "미사와", "Hamamatsu": "하마마쓰", "Komatsu": "고마쓰", "Naha": "나하", "Asahikawa": "아사히카와", "Miyakojima": "미야코지마", "Ishigaki": "이시가키", "Amami Oshima": "아마미오시마", "Yokota": "요코타", "Kadena": "가데나", "Ningbo": "닝보", "Zhoushan": "저우산", "Anshan": "안산", "Wuhu": "우후", "Zhangzhou": "장저우", "Huangshan": "황산", "Tonghua": "퉁화", "Laiwu": "라이우", "Fuzhou": "푸저우", "Xiamen": "샤먼", "Fokino": "포키노", "Bolshoy Kamen": "볼쇼이카멘", "Ussuriysk": "우수리스크", "Sovetskaya Gavan": "소비예츠카야가반", "Yuzhno-Sakhalinsk": "유즈노사할린스크", "Petropavlovsk-Kamchatsky": "페트로파블롭스크-캄차츠키", "Sohae (Cholsan)": "서해 (철산)", "Tonghae (Musudan-ri)": "동해 (무수단리)", "Sunan (Pyongyang)": "순안 (평양)", "Yongbyon": "영변", "Punggye-ri (Kilju)": "풍계리 (길주)", "Sino-ri (Kusong)": "신오리 (구성)", "Sakkanmol (Kumchon)": "삭간몰 (금천)", "Yeongjeo-dong": "영저동", "Kaohsiung": "가오슝", "Keelung": "지룽", "Bashi Channel": "바시 해협", "Taiwan Strait": "대만 해협", "Shanghai – Korea Strait – Busan – Tokyo Bay": "상하이 – 대한해협 – 부산 – 도쿄만", "Korea Strait – East Sea / Sea of Japan – Tsugaru Strait": "대한해협 – 동해 – 쓰가루 해협", "Vladivostok – La Perouse (Soya) Strait – Pacific": "블라디보스토크 – 라페루즈(소야) 해협 – 태평양", "East China Sea – Miyako Strait – Pacific": "동중국해 – 미야코 해협 – 태평양", "East China Sea – Osumi Strait – Pacific": "동중국해 – 오스미 해협 – 태평양", "Kuril Islands": "쿠릴 열도", "Senkaku Islands": "센카쿠 열도", "Overlapping claim Liancourt Rocks: Japan / South Korea": "리앙쿠르 암초 중첩 주장: 일본 / 남한", "Joint regime area: South Korea / Japan": "남한·일본 공동관리수역", "South Korea EEZ (Marine Regions)": "남한 EEZ (Marine Regions)", "China EEZ (Marine Regions)": "중국 EEZ (Marine Regions)", "Russia EEZ (Marine Regions)": "러시아 EEZ (Marine Regions)", "North Korea EEZ (Marine Regions)": "북한 EEZ (Marine Regions)", "Liancourt Rocks (Takeshima / Dokdo): overlapping Japanese and South Korean EEZ claims": "리앙쿠르 암초 (독도 / 다케시마): 남한과 일본의 EEZ 주장이 겹치는 해역", "Liancourt Rocks - Dokdo (South Korea) / Takeshima (Japan)": "리앙쿠르 암초 – 독도 (남한) / 다케시마 (일본)", "Army Missile Strategic Command HQ · 8th Fighter Wing": "육군 미사일전략사령부 · 제8전투비행단", "Gyeryongdae: Army, Navy and Air Force headquarters": "계룡대: 육·해·공군 본부", "THAAD battery (USFK)": "사드(THAAD) 포대 (주한미군)", "1st Fighter Wing": "제1전투비행단", "10th Fighter Wing": "제10전투비행단", "11th Fighter Wing (F-15K)": "제11전투비행단 (F-15K)", "16th Fighter Wing": "제16전투비행단", "17th Fighter Wing (F-35A) · 39th Reconnaissance Wing": "제17전투비행단 (F-35A) · 제39정찰비행단", "18th Fighter Wing": "제18전투비행단", "19th Fighter Wing": "제19전투비행단", "20th Fighter Wing (KF-16)": "제20전투비행단 (KF-16)", "Air Force Operations Command · Osan AB (USFK) · 2nd Fleet (Pyeongtaek)": "공군작전사령부 · 오산공군기지 (주한미군) · 해군 제2함대 (평택)", "Navy Operations Command": "해군작전사령부", "1st Fleet": "제1함대", "3rd Fleet": "제3함대", "Submarine Force Command": "잠수함사령부", "Naval Air Command · Marine Corps 1st Division": "해군항공사령부 · 해병대 제1사단", "Incheon Defense Command · 9th Marine Brigade": "인천방어사령부 · 해병 제9여단", "Seoul AB (government/military airfield)": "서울공항 (정부·군 공항)", "JMSDF Self Defense Fleet HQ · US 7th Fleet HQ": "해상자위대 자위함대 사령부 · 미 7함대 사령부", "JMSDF Sasebo District · Amphibious Rapid Deployment Brigade (Ainoura)": "해상자위대 사세보 지방대 · 수륙기동단 (아이노우라)", "JMSDF Kure District · submarine force": "해상자위대 구레 지방대 · 잠수함 부대", "JMSDF Maizuru District (Sea of Japan / East Sea facing)": "해상자위대 마이즈루 지방대 (동해 방면)", "JMSDF Ominato District (Tsugaru Strait)": "해상자위대 오미나토 지방대 (쓰가루 해협)", "JASDF 2nd Air Wing (F-15J) · JGSDF 7th Division (Higashi-Chitose)": "항공자위대 제2항공단 (F-15J) · 육상자위대 제7사단 (히가시지토세)", "JASDF 3rd Air Wing (F-35A) · Misawa AB (USAF)": "항공자위대 제3항공단 (F-35A) · 미사와 기지 (미 공군)", "JASDF airborne early warning (E-767)": "항공자위대 조기경보기 (E-767)", "JASDF 6th Air Wing (F-15J)": "항공자위대 제6항공단 (F-15J)", "JASDF 9th Air Wing (F-15J)": "항공자위대 제9항공단 (F-15J)", "JGSDF 2nd Division": "육상자위대 제2사단", "JGSDF surface-to-ship / surface-to-air missile unit": "육상자위대 지대함·지대공 미사일 부대", "JGSDF garrison, missile units": "육상자위대 주둔지, 미사일 부대", "USFJ HQ · US 5th Air Force HQ": "주일미군 사령부 · 미 제5공군 사령부", "Kadena AB (USAF), largest US air base in the Far East": "가데나 기지 (미 공군), 극동 최대의 미 공군 기지", "PLAN Northern Theater; Jianggezhuang submarine base": "해군 북부전구; 장거좡 잠수함 기지", "PLAN Eastern Theater Navy HQ · naval aviation": "해군 동부전구 사령부 · 해군항공대", "PLAN East Sea Fleet surface and submarine base": "해군 동해함대 수상함·잠수함 기지", "PLAAF Northern Theater fighter base (J-20)": "공군 북부전구 전투기 기지 (J-20)", "PLAAF Eastern Theater fighter base (J-20)": "공군 동부전구 전투기 기지 (J-20)", "PLAAF forward base; converted-drone units reported": "공군 전방기지; 개조 무인기 부대 보도", "PLARF Base 61 HQ area (Eastern Theater missile units)": "로켓군 제61기지 본부 지역 (동부전구 미사일 부대)", "PLARF Base 65 subordinate missile brigade area": "로켓군 제65기지 소속 미사일여단 지역", "PLAGF 73rd Group Army area": "육군 제73집단군 지역", "PLAGF amphibious units": "육군 상륙부대", "Pacific Fleet HQ": "태평양함대 사령부", "Pacific Fleet surface combatant base (Abrek Bay)": "태평양함대 수상전투함 기지 (아브레크만)", "Submarine repair and basing": "잠수함 수리·정박 기지", "Army and aviation garrison": "육군·항공 주둔지", "Naval facility, Tatar Strait": "해군 시설, 타타르 해협", "68th Army Corps; Sakhalin air defence": "제68군단; 사할린 방공", "Rybachiy submarine base (SSBN)": "리바치 잠수함 기지 (SSBN)", "Sohae Satellite Launching Station": "서해위성발사장", "Tonghae Satellite Launching Ground": "동해위성발사장", "Pyongyang Sunan airfield, repeated launch point": "평양 순안비행장, 반복 발사 지점", "Nuclear scientific research centre": "핵과학연구센터", "Nuclear test site": "핵실험장", "Reported missile operating base (CSIS Beyond Parallel)": "미사일 작전기지로 보도됨 (CSIS Beyond Parallel)"});
+Object.assign(MAPLBL.ja,{"Wonju": "原州", "Gyeryong": "鶏龍", "Seongju": "星州", "Gwangju": "光州", "Suwon": "水原", "Daegu": "大邱", "Yecheon": "醴泉", "Cheongju": "清州", "Gangneung": "江陵", "Chungju": "忠州", "Seosan": "瑞山", "Pyeongtaek": "平沢", "Jinhae (Changwon)": "鎮海（昌原）", "Pohang": "浦項", "Seongnam": "城南", "Yokosuka": "横須賀", "Sasebo": "佐世保", "Kure": "呉", "Ominato (Mutsu)": "大湊（むつ）", "Chitose": "千歳", "Misawa": "三沢", "Hamamatsu": "浜松", "Komatsu": "小松", "Naha": "那覇", "Asahikawa": "旭川", "Miyakojima": "宮古島", "Ishigaki": "石垣", "Amami Oshima": "奄美大島", "Yokota": "横田", "Kadena": "嘉手納", "Ningbo": "寧波", "Zhoushan": "舟山", "Anshan": "鞍山", "Wuhu": "蕪湖", "Zhangzhou": "漳州", "Huangshan": "黄山", "Tonghua": "通化", "Laiwu": "莱蕪", "Fuzhou": "福州", "Xiamen": "厦門", "Fokino": "フォーキノ", "Bolshoy Kamen": "ボリショイ・カーメニ", "Ussuriysk": "ウスリースク", "Sovetskaya Gavan": "ソヴェツカヤ・ガヴァニ", "Yuzhno-Sakhalinsk": "ユジノサハリンスク", "Petropavlovsk-Kamchatsky": "ペトロパブロフスク・カムチャツキー", "Sohae (Cholsan)": "西海（鉄山）", "Tonghae (Musudan-ri)": "東海（舞水端里）", "Sunan (Pyongyang)": "順安（平壌）", "Yongbyon": "寧辺", "Punggye-ri (Kilju)": "豊渓里（吉州）", "Sino-ri (Kusong)": "新五里（亀城）", "Sakkanmol (Kumchon)": "サッカンモル（金川）", "Yeongjeo-dong": "ヨンジョ洞", "Kaohsiung": "高雄", "Keelung": "基隆", "Bashi Channel": "バシー海峡", "Taiwan Strait": "台湾海峡", "Shanghai – Korea Strait – Busan – Tokyo Bay": "上海 – 対馬海峡 – 釜山 – 東京湾", "Korea Strait – East Sea / Sea of Japan – Tsugaru Strait": "対馬海峡 – 日本海 – 津軽海峡", "Vladivostok – La Perouse (Soya) Strait – Pacific": "ウラジオストク – 宗谷海峡 – 太平洋", "East China Sea – Miyako Strait – Pacific": "東シナ海 – 宮古海峡 – 太平洋", "East China Sea – Osumi Strait – Pacific": "東シナ海 – 大隅海峡 – 太平洋", "Kuril Islands": "千島列島（北方領土）", "Senkaku Islands": "尖閣諸島", "Overlapping claim Liancourt Rocks: Japan / South Korea": "リアンクール岩礁の重複主張：日本／韓国", "Joint regime area: South Korea / Japan": "日韓暫定措置水域", "South Korea EEZ (Marine Regions)": "韓国EEZ（Marine Regions）", "China EEZ (Marine Regions)": "中国EEZ（Marine Regions）", "Russia EEZ (Marine Regions)": "ロシアEEZ（Marine Regions）", "North Korea EEZ (Marine Regions)": "北朝鮮EEZ（Marine Regions）", "Liancourt Rocks (Takeshima / Dokdo): overlapping Japanese and South Korean EEZ claims": "リアンクール岩礁（竹島／独島）：日本と韓国のEEZ主張が重なる海域", "Liancourt Rocks - Dokdo (South Korea) / Takeshima (Japan)": "リアンクール岩礁 – 竹島（日本）／独島（韓国）", "Army Missile Strategic Command HQ · 8th Fighter Wing": "陸軍ミサイル戦略司令部・第8戦闘飛行団", "Gyeryongdae: Army, Navy and Air Force headquarters": "鶏龍台：陸海空軍本部", "THAAD battery (USFK)": "THAAD部隊（在韓米軍）", "1st Fighter Wing": "第1戦闘飛行団", "10th Fighter Wing": "第10戦闘飛行団", "11th Fighter Wing (F-15K)": "第11戦闘飛行団（F-15K）", "16th Fighter Wing": "第16戦闘飛行団", "17th Fighter Wing (F-35A) · 39th Reconnaissance Wing": "第17戦闘飛行団（F-35A）・第39偵察飛行団", "18th Fighter Wing": "第18戦闘飛行団", "19th Fighter Wing": "第19戦闘飛行団", "20th Fighter Wing (KF-16)": "第20戦闘飛行団（KF-16）", "Air Force Operations Command · Osan AB (USFK) · 2nd Fleet (Pyeongtaek)": "空軍作戦司令部・烏山空軍基地（在韓米軍）・海軍第2艦隊（平沢）", "Navy Operations Command": "海軍作戦司令部", "1st Fleet": "第1艦隊", "3rd Fleet": "第3艦隊", "Submarine Force Command": "潜水艦司令部", "Naval Air Command · Marine Corps 1st Division": "海軍航空司令部・海兵隊第1師団", "Incheon Defense Command · 9th Marine Brigade": "仁川防衛司令部・海兵第9旅団", "Seoul AB (government/military airfield)": "ソウル空港（政府・軍用飛行場）", "JMSDF Self Defense Fleet HQ · US 7th Fleet HQ": "海上自衛隊 自衛艦隊司令部・米第7艦隊司令部", "JMSDF Sasebo District · Amphibious Rapid Deployment Brigade (Ainoura)": "海上自衛隊 佐世保地方隊・水陸機動団（相浦）", "JMSDF Kure District · submarine force": "海上自衛隊 呉地方隊・潜水艦部隊", "JMSDF Maizuru District (Sea of Japan / East Sea facing)": "海上自衛隊 舞鶴地方隊（日本海側）", "JMSDF Ominato District (Tsugaru Strait)": "海上自衛隊 大湊地方隊（津軽海峡）", "JASDF 2nd Air Wing (F-15J) · JGSDF 7th Division (Higashi-Chitose)": "航空自衛隊 第2航空団（F-15J）・陸上自衛隊 第7師団（東千歳）", "JASDF 3rd Air Wing (F-35A) · Misawa AB (USAF)": "航空自衛隊 第3航空団（F-35A）・三沢基地（米空軍）", "JASDF airborne early warning (E-767)": "航空自衛隊 早期警戒機（E-767）", "JASDF 6th Air Wing (F-15J)": "航空自衛隊 第6航空団（F-15J）", "JASDF 9th Air Wing (F-15J)": "航空自衛隊 第9航空団（F-15J）", "JGSDF 2nd Division": "陸上自衛隊 第2師団", "JGSDF surface-to-ship / surface-to-air missile unit": "陸上自衛隊 地対艦・地対空ミサイル部隊", "JGSDF garrison, missile units": "陸上自衛隊 駐屯地、ミサイル部隊", "USFJ HQ · US 5th Air Force HQ": "在日米軍司令部・米第5空軍司令部", "Kadena AB (USAF), largest US air base in the Far East": "嘉手納基地（米空軍）、極東最大の米空軍基地", "PLAN Northern Theater; Jianggezhuang submarine base": "海軍 北部戦区；江哥荘潜水艦基地", "PLAN Eastern Theater Navy HQ · naval aviation": "海軍 東部戦区司令部・海軍航空隊", "PLAN East Sea Fleet surface and submarine base": "海軍 東海艦隊 水上艦・潜水艦基地", "PLAAF Northern Theater fighter base (J-20)": "空軍 北部戦区 戦闘機基地（J-20）", "PLAAF Eastern Theater fighter base (J-20)": "空軍 東部戦区 戦闘機基地（J-20）", "PLAAF forward base; converted-drone units reported": "空軍 前方基地；改造無人機部隊の報道あり", "PLARF Base 61 HQ area (Eastern Theater missile units)": "ロケット軍 第61基地司令部地域（東部戦区ミサイル部隊）", "PLARF Base 65 subordinate missile brigade area": "ロケット軍 第65基地所属ミサイル旅団地域", "PLAGF 73rd Group Army area": "陸軍 第73集団軍地域", "PLAGF amphibious units": "陸軍 水陸両用部隊", "Pacific Fleet HQ": "太平洋艦隊司令部", "Pacific Fleet surface combatant base (Abrek Bay)": "太平洋艦隊 水上戦闘艦基地（アブレク湾）", "Submarine repair and basing": "潜水艦の修理・基地", "Army and aviation garrison": "陸軍・航空部隊駐屯地", "Naval facility, Tatar Strait": "海軍施設（間宮海峡）", "68th Army Corps; Sakhalin air defence": "第68軍団；サハリン防空", "Rybachiy submarine base (SSBN)": "ルイバチー潜水艦基地（SSBN）", "Sohae Satellite Launching Station": "西海衛星発射場", "Tonghae Satellite Launching Ground": "東海衛星発射場", "Pyongyang Sunan airfield, repeated launch point": "平壌・順安飛行場、繰り返し使われる発射地点", "Nuclear scientific research centre": "核科学研究センター", "Nuclear test site": "核実験場", "Reported missile operating base (CSIS Beyond Parallel)": "ミサイル作戦基地と報じられる（CSIS Beyond Parallel）"});
 function TM(n){const d=MAPLBL[LANG];return (d&&d[n])||n;}
 function ringLbl(km){ if(LANG==="en") return km===500?km+" km from Pyongyang":km+" km";
   return T(km===500?"ring.py":"ring.km","").replace("$",km); }
@@ -758,7 +1194,12 @@ function relabelMap(){ if(typeof g==="undefined") return;
   g.selectAll("text[data-k]").each(function(){
     const k=this.getAttribute("data-k"); if(k) this.textContent=TM(k);});
   g.selectAll("text.ringlbl").each(function(){
-    this.textContent=ringLbl(+this.getAttribute("data-km"));});}
+    this.textContent=ringLbl(+this.getAttribute("data-km"));});
+  g.selectAll("title[data-k]").each(function(){this.textContent=TM(this.getAttribute("data-k"));});
+  g.selectAll("title[data-bn]").each(function(){this.textContent=TM(this.getAttribute("data-bn"))+" - "+TM(this.getAttribute("data-bu"));});
+  try{ g.selectAll("text.lbl-site").each(function(){const n=this.getAttribute("data-fac");
+    if(n) this.textContent=facName(n).replace(/ \(.*$/,"");}); }catch(e){}
+  if(typeof queueDeclutter==="function") try{queueDeclutter();}catch(e){}}
 
 const W=900,H=760, svg=d3.select("#map");
 // Default frame = the launch theatre: North Korea, the Korean peninsula, the East Sea / Sea of
@@ -768,7 +1209,7 @@ const FRAME={type:"MultiPoint",coordinates:[[123,32.6],[134,32.6],[145,32.6],
   [123,38.9],[145,38.9],[123,45.2],[134,45.2],[145,45.2]]};
 const proj=d3.geoConicConformal().parallels([24,42]).rotate([-137,0]).fitExtent([[2,2],[W-2,H-2]],FRAME);
 const path=d3.geoPath(proj);
-svg.append("defs").html(`<clipPath id="clipMap"><rect width="${W}" height="${H}"/></clipPath>
+svg.append("defs").html(`<clipPath id="clipMap"><rect x="${-W}" y="${-H}" width="${3*W}" height="${3*H}"/></clipPath>
  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" style="stroke:var(--ink-3)" stroke-width="1" opacity=".55"/></pattern>`);
 const clipG=svg.append("g").attr("clip-path","url(#clipMap)");
 const g=clipG.append("g");
@@ -780,7 +1221,7 @@ const LBLS=[];
 g.append("rect").attr("x",-2*W).attr("y",-2*H).attr("width",5*W).attr("height",5*H).style("fill","var(--sea)");
 g.append("path").datum(d3.geoGraticule().step([5,5])()).attr("d",path).style("fill","none").style("stroke","var(--grat)").attr("data-bw",.7).attr("stroke-width",.7);
 g.append("path").attr("class","ly-jp-base").datum(EEZ.jp_eez).attr("d",path).style("fill","var(--eez-fill)").style("stroke","var(--ink-2)").attr("data-bw",1.1).attr("stroke-width",1.1).attr("stroke-dasharray","5 4");
-EEZ.disputed.forEach(dd=>g.append("path").datum(dd.g).attr("d",path).style("fill","url(#hatch)").style("stroke","var(--ink-3)").attr("data-bw",.6).attr("stroke-width",.6).attr("stroke-dasharray","2 3").append("title").text(dd.name));
+EEZ.disputed.forEach(dd=>g.append("path").datum(dd.g).attr("d",path).style("fill","url(#hatch)").style("stroke","var(--ink-3)").attr("data-bw",.6).attr("stroke-width",.6).attr("stroke-dasharray","2 3").append("title").attr("data-k",dd.name).text(TM(dd.name)));
 LAND.forEach(c=>g.append("path").datum(c.g).attr("d",path)
   .style("fill",c.name==="North Korea"?"var(--land-nk)":c.name==="Japan"?"var(--land-jp)":"var(--land)")
   .style("stroke","var(--ink-3)").attr("data-bw",c.name==="Japan"||c.name==="North Korea"?.9:.5)
@@ -792,18 +1233,18 @@ Object.entries(GEO2.eez).forEach(([k,v])=>{
   LZ.eez.append("path").attr("class","ly-eez ly-"+k).datum(v.g).attr("d",path)
     .style("fill","none").style("stroke",EEZCOL[k]).attr("data-bw",1.2).attr("stroke-width",1.2)
     .attr("stroke-dasharray","7 4").attr("opacity",0).style("display","none")
-    .append("title").text(v.name+" EEZ (Marine Regions)");});
+    .append("title").attr("data-k",v.name+" EEZ (Marine Regions)").text(TM(v.name+" EEZ (Marine Regions)"));});
 // Liancourt Rocks: Japan measures its EEZ from these rocks (Takeshima); South Korea
 // controls and administers them (Dokdo). Shown whenever either EEZ layer is on.
 LZ.eez.append("path").attr("class","ly-eez ly-liancourt").datum(GEO2.liancourt).attr("d",path)
   .style("fill","url(#hatch)").style("stroke","var(--ink-2)").attr("data-bw",1).attr("stroke-width",1)
   .attr("opacity",0).style("display","none")
-  .append("title").text("Liancourt Rocks (Takeshima / Dokdo): overlapping Japanese and South Korean EEZ claims");
+  .append("title").attr("data-k","Liancourt Rocks (Takeshima / Dokdo): overlapping Japanese and South Korean EEZ claims").text(TM("Liancourt Rocks (Takeshima / Dokdo): overlapping Japanese and South Korean EEZ claims"));
 GEO2.lanes.forEach(l=>{
   LZ.lane.append("path").datum({type:"LineString",coordinates:l.c}).attr("d",path)
     .style("fill","none").style("stroke","var(--lane)").attr("data-bw",1.6).attr("stroke-width",1.6)
     .attr("stroke-dasharray","1 5").attr("stroke-linecap","round").attr("opacity",.85)
-    .append("title").text(l.n);});
+    .append("title").attr("data-k",l.n).text(TM(l.n));});
 GEO2.choke.forEach(c=>{const p=proj([c.lon,c.lat]);
   const gg=LZ.lane.append("g").attr("class","glbl");gg.node().__pos=p;
   gg.attr("transform",`translate(${p[0]},${p[1]})`);
@@ -825,8 +1266,8 @@ GEO2.bases.forEach(b=>{const p=proj([b.lon,b.lat]);
   gg.append("path").attr("d","M-4,3 L0,-4 L4,3 Z").style("fill","none")
     .style("stroke","var(--base)").attr("stroke-width",1.4);
   LBLS.push({n:gg.append("text").attr("x",6).attr("dy","0.33em").style("font-size","9.5px")
-    .style("fill","var(--base)").style("font-weight",600).text(b.n).node(),p:4});
-  gg.append("title").text(`${b.n} - ${b.u}`);});
+    .style("fill","var(--base)").style("font-weight",600).attr("data-k",b.n).text(TM(b.n)).node(),p:4});
+  gg.append("title").attr("data-bn",b.n).attr("data-bu",b.u).text(`${TM(b.n)} - ${TM(b.u)}`);});
 LZ.lane.style("display","none"); LZ.port.style("display","none");
 function layer(sel,on){
   if(sel==="lane"||sel==="port"){LZ[sel].style("display",on?null:"none");return;}
@@ -872,7 +1313,7 @@ function setRings(){ ringG.style("display",RINGON?null:"none");
   g.append("circle").attr("cx",p[0]).attr("cy",p[1]).attr("r",i?1.1:1.5)
    .attr("class","islet").style("fill","var(--land)").style("stroke","var(--ink-2)")
    .attr("data-bw",.5).attr("stroke-width",.5)
-   .append("title").text("Liancourt Rocks - Dokdo (South Korea) / Takeshima (Japan)");});
+   .append("title").attr("data-k","Liancourt Rocks - Dokdo (South Korea) / Takeshima (Japan)").text(TM("Liancourt Rocks - Dokdo (South Korea) / Takeshima (Japan)"));});
 const CAPS=[["Pyongyang",125.7381,39.0392],["Seoul",126.9780,37.5665],
             ["Tokyo",139.6917,35.6895],["Beijing",116.4074,39.9042]];
 const capG=g.append("g").attr("class","ly-cap");
@@ -885,7 +1326,7 @@ CAPS.forEach(([n,lon,lat])=>{const p=proj([lon,lat]);
     .style("font-size","10px").style("font-weight",700).style("fill","var(--ink)")
     .text(typeof TM==="function"?TM(n):n);
   LBLS.push({n:tx.node(),p:1});
-  gg.append("title").text(n);});
+  gg.append("title").attr("data-k",n).text(TM(n));});
 const ghost=g.append("g"), trail=g.append("g"), live=g.append("g"), sites=g.append("g");
 let ERRON=true;
 const CAPT=[];   // caption timers, cleared on every redraw
@@ -923,7 +1364,7 @@ function declutter(){
     if(hit) o.n.style.display="none"; else kept.push(r);
   }
 }
-const zoom=d3.zoom().scaleExtent([0.45,14]).translateExtent([[-W*0.8,-H*0.8],[W*1.8,H*1.8]]).extent([[0,0],[W,H]])
+const zoom=d3.zoom().scaleExtent([0.45,45]).translateExtent([[-W*0.8,-H*0.8],[W*1.8,H*1.8]]).extent([[0,0],[W,H]])
   .on("zoom",ev=>{ZK=ev.transform.k; g.attr("transform",ev.transform); rescale();});
 svg.call(zoom).on("dblclick.zoom",null);
 const zBy=k=>svg.transition().duration(260).call(zoom.scaleBy,k);
@@ -1024,7 +1465,7 @@ function drawMap(){
         ? new Date(gk+"T00:00:00").toLocaleDateString(LOC(),{day:"numeric",month:"long"})
         : new Date(+gk.slice(0,4),+gk.slice(5,7)-1,1).toLocaleDateString(LOC(),{month:"long",year:"numeric"});
       CAPT.push(setTimeout(()=>{cap.classList.add("on");
-        cap.innerHTML=`<span>${capTxt}</span><small>${arr.length} missile${arr.length>1?"s":""} · ${gi+1}/${nG}</small>`;},
+        cap.innerHTML=`<span>${capTxt}</span><small>${LANG==="ko"?`미사일 ${arr.length}발`:LANG==="ja"?`ミサイル${arr.length}発`:`${arr.length} missile${arr.length>1?"s":""}`} · ${gi+1}/${nG}</small>`;},
         reduce?0:gstart/sp));
     }
     // one label per date group, so salvos on different days read apart
@@ -1055,9 +1496,9 @@ function drawMap(){
     const sg=sites.append("g").attr("class","sitem"); sg.node().__pos=p;
     sg.attr("transform",`translate(${p[0]},${p[1]}) scale(${1/ZK})`);
     sg.append("rect").attr("x",-4).attr("y",-4).attr("width",8).attr("height",8).style("fill","var(--ink)").style("stroke","var(--panel)").attr("stroke-width",1.4)
-      .append("title").text(`Launch site: ${facName(n)} — ${cnt} missile${cnt>1?"s":""} in this ${gran}`);
+      .append("title").text(LANG==="ko"?`발사 장소: ${facName(n)} — 이번 ${gran==="month"?"달":"해"} 미사일 ${cnt}발`:LANG==="ja"?`発射地点：${facName(n)} — 今${gran==="month"?"月":"年"}のミサイル ${cnt}発`:`Launch site: ${facName(n)} — ${cnt} missile${cnt>1?"s":""} in this ${gran}`);
     // the site's own name, shown when there is room for it
-    const stx=sg.append("text").attr("class","lbl-site").attr("x",7).attr("y",4)
+    const stx=sg.append("text").attr("class","lbl-site").attr("data-fac",n).attr("x",7).attr("y",4)
       .style("font-size","9.5px").style("font-weight",700).style("fill","var(--ink)")
       .style("paint-order","stroke").style("stroke","var(--panel)").style("stroke-width",2.6)
       .text(facName(n).replace(/ \(.*$/,""));
@@ -1107,9 +1548,10 @@ function setHos(a,b){
     const budget=Math.floor((el.clientWidth||318)/7.0)-lab2.length-3;
     let txt=cand.find(c=>c.length<=budget)||cand[cand.length-1];
     if(LANG!=="en"){                       // CJK names are short enough to print in full
-      const full=seg.map(r=>TP(r[1])).join(" → ");
-      const last=TP(seg[seg.length-1][1]);
-      txt=full.length<=Math.max(10,budget)?full:last;}
+      const full=seg.map(r=>TPK(r[1])).join(" → ");
+      const last=TPK(seg[seg.length-1][1]);
+      const cjkBudget=LANG==="ja"?Math.floor((el.clientWidth||318)/11)-lab2.length-2:budget;
+      txt=full.length<=Math.max(10,cjkBudget)?full:last;}
     el.innerHTML=lab2+": <b></b>"; el.lastChild.textContent=txt;
     const multi=seg.length>1;
     el.title=lab+" — "+office+(multi?" (more than one holder in this period)":"")+"\n"+seg.map(r=>r[1]+(LANG==="en"?"":" / "+TP(r[1]))+" (from "+r[0]+")").join("\n");
@@ -1135,6 +1577,10 @@ function drawLog(){
   document.getElementById("kCumL").textContent=(scope==="all"?T("kpi.cumA","Missiles / occasions"):T("kpi.cumB","Eastward missiles / occasions"))+T("kpi.since",", since Jan 1998");
   document.getElementById("kIn").textContent=upto.filter(d=>d.status==="in").length;
   document.getElementById("kOver").textContent=new Set(upto.filter(d=>d.overflight).map(d=>d.date_kst)).size;
+  { const n=now.length, ob=document.getElementById("openMonth");
+    ob.textContent=(LANG==="en"?`${n} missile${n===1?"":"s"} · open details`:`${n}${T("log.n","")} · ${T("log.open","")}`)+" ▸";
+    if(typeof paneList!=="undefined"&&!paneList.hidden) renderList();
+    if(typeof dwHead==="function") dwHead(); }
   const ev=document.getElementById("events"); ev.innerHTML="";
   if(!now.length){
     const nx=nextLaunch();
@@ -1185,11 +1631,11 @@ function playNext(i){
 // The timeline is 343 months wide. At 1x they are about 3px each, so it can be stretched
 // up to 8x and scrolled sideways. The viewBox grows with the zoom while the CSS width
 // grows by the same factor, which keeps every label at a constant size.
-const TW0=1200,TH=238,m={l:34,r:10,t:64,b:30}; let TZ=1, TW=TW0; const tl=d3.select("#tl");
+const TW0=1200,TH=252,m={l:34,r:34,t:64,b:42}; let TZ=1, TW=TW0; const tl=d3.select("#tl");
 const x=d3.scaleBand().domain(months).range([m.l,TW-m.r]).paddingInner(.18);
 const tlWrap=document.querySelector(".tlwrap");
 function setTZ(z,anchor){
-  const prev=TZ; z=Math.max(1,Math.min(8,+z.toFixed(2)));
+  const prev=TZ; z=Math.max(1,Math.min(16,+z.toFixed(2)));
   if(z===prev) return;
   const w=tlWrap.clientWidth||1;
   const at=anchor==null?(tlWrap.scrollLeft+w/2)/(tlWrap.scrollWidth||1):anchor;
@@ -1198,12 +1644,14 @@ function setTZ(z,anchor){
   drawTL(); drawCursor();
   tlWrap.scrollLeft=Math.max(0,at*tlWrap.scrollWidth-w/2); tlTicks();
   const zo=document.getElementById("tzOut"), zi=document.getElementById("tzIn");
-  if(zo){zo.disabled=TZ<=1; zi.disabled=TZ>=8;}
+  if(zo){zo.disabled=TZ<=1; zi.disabled=TZ>=16;}
 }
 function tlTicks(){ // keep the scale numbers pinned to the left edge of what is on screen
   if(!tlWrap) return;
   const off=TZ>1?(tlWrap.scrollLeft/(tlWrap.scrollWidth||1))*TW:0;
-  tl.selectAll("text.ytick").attr("x",m.l-6+off);
+  const vw=TZ>1?(tlWrap.clientWidth/(tlWrap.scrollWidth||1))*TW:TW;
+  tl.selectAll("text.ytick:not(.yr)").attr("x",m.l-6+off);
+  tl.selectAll("text.yr").attr("x",off+vw-m.r+6);   // the same scale, mirrored on the right edge
 }
 function tlCenter(){ // keep the selected month in view after a redraw
   const w=tlWrap.clientWidth||1, cx=(x(months[cur])+x.bandwidth()/2)/TW*tlWrap.scrollWidth;
@@ -1216,12 +1664,16 @@ const gBand=tl.append("g"), gT=tl.append("g"), gAx=tl.append("g"), gOcc=tl.appen
 // Marker shape + colour per context category; colours come from CTXCAT, the same ones used in the "in context" lists.
 const CTXSHAPE={N:d3.symbolTriangle,U:d3.symbolSquare,K:d3.symbolDiamond,S:d3.symbolCircle,J:d3.symbolCross,R:d3.symbolStar};
 const ctxGlyph=(c,sz)=>d3.symbol(CTXSHAPE[c],sz)();
+// Category icons: radiation trefoil (nuclear), globe (UN), Korean peninsula with both flags, and national flags.
+const CTXICON={"N": [16, 16, "<circle cx=\"8\" cy=\"8\" r=\"8\" fill=\"#FFD400\"/><path d=\"M9.35 5.66L11.15 2.54A6.3 6.3 0 0 0 4.85 2.54L6.65 5.66A2.7 2.7 0 0 1 9.35 5.66Z\" fill=\"#141414\"/><path d=\"M5.30 8.00L1.70 8.00A6.3 6.3 0 0 0 4.85 13.46L6.65 10.34A2.7 2.7 0 0 1 5.30 8.00Z\" fill=\"#141414\"/><path d=\"M9.35 10.34L11.15 13.46A6.3 6.3 0 0 0 14.30 8.00L10.70 8.00A2.7 2.7 0 0 1 9.35 10.34Z\" fill=\"#141414\"/><circle cx=\"8\" cy=\"8\" r=\"1.3\" fill=\"#141414\"/>"], "U": [16, 16, "<circle cx=\"8\" cy=\"8\" r=\"8\" fill=\"#1F5FE0\"/><g fill=\"none\" stroke=\"#fff\" stroke-width=\"1\"><circle cx=\"8\" cy=\"8\" r=\"5.2\"/><ellipse cx=\"8\" cy=\"8\" rx=\"2.3\" ry=\"5.2\"/><path d=\"M2.8 8H13.2M3.6 5.2H12.4M3.6 10.8H12.4\"/></g>"], "K": [26, 14, "<path d=\"M3.2 .6L5.8 .9L7.4 2.2L8.2 3.6L7.3 4.6L7.8 5.8L6.9 7.2L7.3 8.8L6.4 10.8L5 12.8L3.4 13.6L2.2 12.7L1.6 10.9L.8 9.3L1.4 7.7L.6 6.1L1.6 4.7L1.2 3.1L2 1.6Z\" fill=\"#fff\" stroke=\"rgba(0,0,0,.35)\" stroke-width=\".4\"/><g transform=\"translate(11 .5)\"><rect width=\"14\" height=\"6\" fill=\"#024FA2\"/><rect y=\"1.1\" width=\"14\" height=\"3.8\" fill=\"#fff\"/><rect y=\"1.5\" width=\"14\" height=\"3\" fill=\"#ED1C27\"/><circle cx=\"5\" cy=\"3\" r=\"1.25\" fill=\"#fff\"/></g><g transform=\"translate(11 7.5)\"><rect width=\"14\" height=\"6\" fill=\"#fff\"/><path d=\"M4.9 3A2.1 2.1 0 0 1 9.1 3Z\" fill=\"#CD2E3A\"/><path d=\"M4.9 3A2.1 2.1 0 0 0 9.1 3Z\" fill=\"#0047A0\"/><g stroke=\"#000\" stroke-width=\".5\"><path d=\"M1 1.2H2.6M1 4.8H2.6M11.4 1.2H13M11.4 4.8H13\"/></g><rect x=\".25\" y=\".25\" width=\"13.5\" height=\"5.5\" fill=\"none\" stroke=\"rgba(0,0,0,.4)\" stroke-width=\".5\"/></g>"], "S": [16, 11, "<rect y=\"0.00\" width=\"16\" height=\"1.57\" fill=\"#B22234\"/><rect y=\"1.57\" width=\"16\" height=\"1.57\" fill=\"#fff\"/><rect y=\"3.14\" width=\"16\" height=\"1.57\" fill=\"#B22234\"/><rect y=\"4.71\" width=\"16\" height=\"1.57\" fill=\"#fff\"/><rect y=\"6.29\" width=\"16\" height=\"1.57\" fill=\"#B22234\"/><rect y=\"7.86\" width=\"16\" height=\"1.57\" fill=\"#fff\"/><rect y=\"9.43\" width=\"16\" height=\"1.57\" fill=\"#B22234\"/><rect width=\"7\" height=\"5.6\" fill=\"#3C3B6E\"/><g fill=\"#fff\"><circle cx=\"1.6\" cy=\"1.4\" r=\".5\"/><circle cx=\"3.5\" cy=\"1.4\" r=\".5\"/><circle cx=\"5.4\" cy=\"1.4\" r=\".5\"/><circle cx=\"2.5\" cy=\"3\" r=\".5\"/><circle cx=\"4.4\" cy=\"3\" r=\".5\"/><circle cx=\"1.6\" cy=\"4.5\" r=\".5\"/><circle cx=\"3.5\" cy=\"4.5\" r=\".5\"/><circle cx=\"5.4\" cy=\"4.5\" r=\".5\"/></g><rect x=\".25\" y=\".25\" width=\"15.5\" height=\"10.5\" fill=\"none\" stroke=\"rgba(0,0,0,.4)\" stroke-width=\".5\"/>"], "J": [16, 11, "<rect width=\"16\" height=\"11\" fill=\"#fff\"/><circle cx=\"8\" cy=\"5.5\" r=\"3.1\" fill=\"#BC002D\"/><rect x=\".25\" y=\".25\" width=\"15.5\" height=\"10.5\" fill=\"none\" stroke=\"rgba(0,0,0,.4)\" stroke-width=\".5\"/>"], "R": [16, 11, "<rect width=\"16\" height=\"3.67\" fill=\"#fff\"/><rect y=\"3.67\" width=\"16\" height=\"3.67\" fill=\"#0039A6\"/><rect y=\"7.33\" width=\"16\" height=\"3.67\" fill=\"#D52B1E\"/><rect x=\".25\" y=\".25\" width=\"15.5\" height=\"10.5\" fill=\"none\" stroke=\"rgba(0,0,0,.4)\" stroke-width=\".5\"/>"]};
+const ctxIconSvg=(c,h)=>{const [w,hh,b]=CTXICON[c];return `<svg class="icn" width="${(h*w/hh).toFixed(1)}" height="${h}" viewBox="0 0 ${w} ${hh}" aria-hidden="true">${b}</svg>`;};
+const ctxIconG=(c,h)=>{const [w,hh,b]=CTXICON[c],k=h/hh;return `<g transform="translate(${(-w*k/2).toFixed(2)},${(-h/2).toFixed(2)}) scale(${k.toFixed(4)})">${b}</g>`;};
 // Category key doubles as a filter: click a chip to hide/show that category's
 // markers on the timeline above; TLCATON holds the categories currently shown.
 const TLCATON=new Set(Object.keys(CTXCAT));
 const catKeyEl=document.getElementById("catKey");
 catKeyEl.innerHTML=Object.keys(CTXCAT).map(c=>
-  `<button type="button" class="cat" data-cat="${c}" aria-pressed="true" style="--cc:${CTXCAT[c][1]};--ct:${CTXCAT[c][2]}"><svg width="14" height="14" viewBox="-7 -7 14 14" aria-hidden="true"><path d="${ctxGlyph(c,50)}"/></svg>${TCAT(c)}</button>`).join("");
+  `<button type="button" class="cat" data-cat="${c}" aria-pressed="true" style="--cc:${CTXCAT[c][1]};--ct:${CTXCAT[c][2]}">${ctxIconSvg(c,13)}${TCAT(c)}</button>`).join("");
 catKeyEl.addEventListener("click",e=>{
   const b=e.target.closest("button[data-cat]"); if(!b) return;
   const c=b.dataset.cat;
@@ -1241,21 +1693,25 @@ function drawTL(){
   yS.ticks(3).forEach(t=>{gAx.append("line").attr("x1",m.l).attr("x2",TW-m.r).attr("y1",yS(t)).attr("y2",yS(t)).style("stroke","var(--rule)").attr("stroke-width",t?.6:1);
     gAx.append("text").attr("class","ytick").attr("x",m.l-6).attr("y",yS(t)).attr("dy","0.32em").attr("text-anchor","end")
       .style("fill","var(--ink-3)").style("font-size","10.5px").style("paint-order","stroke")
+      .style("stroke","var(--panel)").style("stroke-width",3).text(t);
+    gAx.append("text").attr("class","ytick yr").attr("x",TW-m.r+6).attr("y",yS(t)).attr("dy","0.32em").attr("text-anchor","start")
+      .style("fill","var(--ink-3)").style("font-size","10.5px").style("paint-order","stroke")
       .style("stroke","var(--panel)").style("stroke-width",3).text(t);});
+  if(typeof tlTicks==="function") tlTicks();
   // year labels always; month ticks once a month is wide enough; week ticks past that
   const bw=x.step();
   const yearEvery=bw>7?1:2;
   months.filter(k=>k.endsWith("-01")&&(+k.slice(0,4))%yearEvery===0).forEach(k=>
     gAx.append("text").attr("x",x(k)).attr("y",TH-8).style("fill","var(--ink-3)")
-       .style("font-size","10.5px").style("font-weight",700).text(k.slice(0,4)));
+       .style("font-size","13.7px").style("font-weight",700).text(k.slice(0,4)));
   if(bw>=9){
     const every=bw>=16?1:bw>=11?3:6;
     months.forEach(k=>{const mo=+k.slice(5,7); if((mo-1)%every) return;
       const xm=x(k);
       gAx.append("line").attr("x1",xm).attr("x2",xm).attr("y1",TH-m.b).attr("y2",TH-m.b+4)
         .style("stroke","var(--rule)").attr("stroke-width",.8);
-      if(bw>=16) gAx.append("text").attr("x",xm+x.bandwidth()/2).attr("y",TH-m.b+13)
-        .attr("text-anchor","middle").style("fill","var(--ink-3)").style("font-size","8.5px")
+      if(bw>=16) gAx.append("text").attr("x",xm+x.bandwidth()/2).attr("y",TH-m.b+15)
+        .attr("text-anchor","middle").style("fill","var(--ink-3)").style("font-size","11px")
         .text(MON3[mo-1]);});
   }
   if(bw>=38){   // weeks: four marks inside each month, unlabelled
@@ -1285,7 +1741,7 @@ function drawTL(){
   gCtx.selectAll("*").remove(); const stackN={};
   CTX2.filter(([k,t])=>TLCATON.has(t)).forEach(([k,t,l])=>{const km=cxM(k);if(!mIndex.has(km))return;const n=stackN[km]=(stackN[km]||0)+1;const cx=x(km)+x.bandwidth()/2, cy=m.t-14-(n-1)*10;
     const gg=gCtx.append("g").attr("transform",`translate(${cx},${cy})`).style("cursor","help");
-    gg.append("path").attr("d",ctxGlyph(t,52)).style("fill",CTXCAT[t][1]).style("stroke","var(--ink)").attr("stroke-width",.8).attr("stroke-opacity",.7);
+    gg.append("g").html(ctxIconG(t,11));
     gg.append("circle").attr("r",6).style("fill","transparent");
     gg.on("mousemove",e=>{tip.innerHTML=`<b>${fmtM(km)}${k.length>7?" "+(+k.slice(8,10)):""}</b> · ${TCAT(t)}<br>${esc(l)}`;tip.style.opacity=1;tip.style.left=Math.min(e.clientX+14,innerWidth-290)+"px";tip.style.top=(e.clientY+14)+"px";}).on("mouseleave",hideTip);});
   drawBands();
@@ -1372,7 +1828,7 @@ tlEl.addEventListener("keydown",e=>{if(e.key==="ArrowLeft"){setMonth(Math.max(0,
 // ---------- playback ----------
 function setMonth(i){cur=i;drawMap();drawLog();drawCursor();if(typeof renderGeo==="function"&&geoScopeEl.checked)renderGeo();
   // a launch that is no longer in view must not linger in the detail tab
-  if(selI!=null){const d=L.find(o=>o.i===selI); if(!d||!inPeriod(d)||!inScope(d)){selI=null;renderDetail(null);} }
+  if(selI!=null){const d=L.find(o=>o.i===selI); if(!d||!inPeriod(d)||!inScope(d)){selI=null;renderDetail(null);if(dwView==="detail"&&stageEl.classList.contains("dw-open")&&mainTab==="log")openDrawer("month");} }
   if(!paneStats.hidden) renderStats();}
 function setPeriod(i){ setMonth(gran==="year"? months.indexOf(months[i].slice(0,4)+"-01")>=0 ? mIndex.get(months[i].slice(0,4)+"-01") : i : i); }
 function stepBy(dir){   // wraps around: last → first, first → last
@@ -1381,8 +1837,12 @@ function stepBy(dir){   // wraps around: last → first, first → last
   const y0=+months[0].slice(0,4), y1=+months[n-1].slice(0,4);
   let ny=+curY()+dir; if(ny>y1) ny=y0; else if(ny<y0) ny=y1;
   setPeriod(mIndex.get(`${ny}-01`));}
-function stop(){playing=false;clearTimeout(timer);document.getElementById("play").textContent="Play";}
-function step(){if(!playing)return;if(cur>=months.length-1){stop();return;}
+let autoLoop=false;
+function stop(){autoLoop=false;playing=false;clearTimeout(timer);document.getElementById("play").textContent="Play";}
+function step(){if(!playing)return;
+  if(cur>=months.length-1){
+    if(autoLoop){ timer=setTimeout(()=>{ if(!playing)return; setMonth(0); timer=setTimeout(step,600/(+speedSel.value)); },3500); return; }
+    stop();return;}
   if(gran==="year"){
     const Y=+curY(), k=`${Y+1}-01`;
     if(!mIndex.has(k)){stop();return;}
@@ -1413,70 +1873,70 @@ document.querySelectorAll('input[name="scope"]').forEach(r=>r.onchange=()=>{scop
 // texts and the long methodology notes stay in English, because they quote or cite the
 // originals and translating them would put words into those sources' mouths.
 const I18N={
- ko:{"tab.log":"월별 기록","tab.det":"발사 상세","tab.stat":"연도 통계","tab.ctx":"지정학적 사건",
+ ko:{"stat.mis":"미사일","stat.occ":"$Y년 발사 횟수","log.open":"상세 보기","geo.how":"북한의 미사일 발사와 관련된 지정학적 사건을 연도별로 정리한 목록. 정부 부처, 보도자료, 보고서 등 공개 자료를 바탕으로 작성함. 링크가 있는 사건은 해당 사건의 신뢰할 수 있는 출처로 연결되며, 링크가 없는 사건은 내부 검토 중. 목록은 매월 업데이트함.","tab.log":"월별 기록","tab.det":"발사 상세","tab.stat":"연도 통계","tab.ctx":"지정학적 사건",
   "btn.play":"재생","btn.next":"다음 발사 ⇥","lbl.speed":"속도","lbl.month":"월","lbl.year":"연",
   "lbl.all":"전체 발사","lbl.east":"동쪽 방향만","btn.reset":"초기화","btn.csv":"CSV 내려받기","btn.apply":"확인",
   "kpi.month":"이 달의 미사일 수 / 발사 회수","kpi.year":"이 해의 미사일 수 / 발사 회수","kpi.cum":"누적 미사일 수 / 발사 회수","kpi.cumA":"미사일 수 / 발사 회수","kpi.cumB":"동쪽 방향 미사일 수 / 발사 회수","kpi.since":", 1998년 1월 이후",
-  "kpi.in":"일본 EEZ 안, 누적","kpi.over":"일본 상공 통과, 누적",
+  "kpi.in":"일본 EEZ 내부 (누적)","kpi.over":"일본 상공 통과 (누적)",
   "leg.in":"일본 EEZ 안 (방위성 발표)","leg.out":"EEZ 밖","leg.unk":"낙하 지점 미상",
   "leg.eez":"일본 EEZ (근사)","leg.est":"추정 지점 + 오차","leg.cfl":"EEZ 귀속 견해 상충",
-  "map.foot":"공식 수치가 제공되지 않은 낙하 지점은 발사 장소·방위각·공표 사거리를 기반으로 재구성한 추정치입니다.",
+  "map.foot":"공식 수치가 제공되지 않은 낙하 지점은 발사 장소·방위각·공표 사거리를 기반으로 재구성한 추정치임.",
   "tl.head":"미사일 발사 통계","band.lbl":"지도자 구간:",
-  "lay.btn":"⊞ 지도 레이어","lay.eez":"배타적경제수역","lay.jp":"일본 (기본 레이어)","lay.kr":"한국",
+  "lay.btn":"⊞ 지도 레이어","lay.eez":"배타적경제수역","lay.jp":"일본 (기본 레이어)","lay.kr":"남한",
   "lay.kp":"북한","lay.cn":"중국","lay.ru":"러시아","lay.mil":"군사 시설 (도시 단위)",
-  "lay.mkr":"한국","lay.mjp":"일본 · 주일미군","lay.mkp":"북한","lay.mcn":"중국","lay.mru":"러시아",
+  "lay.mkr":"남한","lay.mjp":"일본 · 주일미군","lay.mkp":"북한","lay.mcn":"중국","lay.mru":"러시아",
   "lay.sea":"해양 이용","lay.port":"주요 항만","lay.lane":"해상 항로와 해협","lay.unc":"불확실성",
   "lay.err":"추정 지점의 오차 타원",
-  "lay.note":"군사 시설은 공개 자료를 근거로 도시 단위로만 표시합니다. 맥락 정보이며 개별 발사에 대한 주장이 아닙니다.",
+  "lay.note":"군사 시설은 공개 자료를 근거로 도시 단위로만 표시함. 맥락 정보이며 개별 발사에 대한 주장이 아님.",
   "geo.scope":"지도에 표시된 기간만","geo.all":"모든 범주",
   "h.src":"자료 출처","h.two":"두 개의 장부, 두 개의 합계","h.draw":"낙하 지점을 그리는 방법",
   "h.off":"공식 판정을 붙이는 기준","h.dis":"두 당국의 판단이 갈릴 때","h.care":"읽을 때 유의할 점",
   "h1.a":"북한 미사일 발사","h1.b":"트래커","credit":"제작","th.dark":"어둡게","th.light":"밝게",
-  "exp.title":"북한 미사일 발사 트래커","exp.y1":"시작 연도","exp.y2":"종료 연도","exp.rg":"정권","exp.any":"전체","exp.kji":"김정일 (2011-12-17까지)","exp.kju":"김정은 (2011-12-17부터)","exp.cls":"미사일 분류","exp.mis":"미사일 명칭","exp.eez":"EEZ 판정","exp.sea":"낙하 해역","exp.fac":"발사 장소","exp.q":"검색","exp.ph":"미사일, 장소, 날짜…","exp.over":"상공 통과만","exp.east":"동쪽 방향만","exp.in":"일본 EEZ 안","exp.out":"일본 EEZ 밖","exp.unk":"낙하 지점 미공표","exp.off":"방위성 공식 판정만","exp.count":"전체 $T발 중 $N발","exp.note":"한 행이 미사일 한 발입니다(1998년 이후). 행을 누르면 상세가 열리고, 열 제목을 누르면 정렬됩니다.","col.date":"날짜","col.time":"시각","col.mis":"미사일","col.cls":"분류","col.fac":"발사 장소","col.brg":"방위","col.rng":"사거리 km","col.apo":"정점 km","col.sea":"낙하 해역","col.eez":"EEZ","col.over":"일본 상공 통과","vd.in":"안","vd.out":"밖","vd.est":" 추정","vd.na":"미상","vd.yes":"예","cls.HGV":"극초음속 활공체","cls.ICBM":"대륙간","cls.IRBM":"중장거리","cls.MRBM":"준중거리","cls.SLBM":"잠수함발사","cls.SLV":"위성 발사체","cls.SRBM":"단거리","cls.Unknown":"미공표","sea.sea-of-japan":"동해 / 일본해","sea.yellow-sea":"서해 / 황해","sea.pacific-ocean":"태평양","sea.north-korea":"북한 내륙","sea.unknown":"미상","sea.na":"해당 없음","tt.miss":"발사 미사일 수","tt.occ":"발사 회수","leg.in2":"EEZ 안","leg.out2":"밖","leg.unk2":"미상","tl.hover":"* 막대나 마커에 커서를 올리면 수치가 나옵니다","tl.k1":"막대: 발사된 미사일 수 — 일본 EEZ 안","tl.k2":"밖","tl.k3":"낙하 지점 미공표","tl.k4":"선: 발사 회수(미사일 수와 무관하게 한 번의 발사 사건)","a.lang":"언어","a.theme":"밝은 모드와 어두운 모드 전환","a.map":"선택한 달의 북한 미사일 궤적이 표시된 동해 지도","a.zin":"확대","a.zout":"축소","a.zrst":"기본 화면으로","a.ring":"평양 기준 거리 링","a.tzin":"타임라인 확대","a.tzout":"타임라인 축소","a.tzrst":"타임라인 전체 보기",
+  "exp.title":"북한 미사일 발사 트래커","exp.y1":"시작 연도","exp.y2":"종료 연도","exp.rg":"정권","exp.any":"전체","exp.kji":"김정일 (2011-12-17까지)","exp.kju":"김정은 (2011-12-17부터)","exp.cls":"미사일 분류","exp.mis":"미사일 명칭","exp.eez":"EEZ 판정","exp.sea":"낙하 해역","exp.fac":"발사 장소","exp.q":"검색","exp.ph":"미사일, 장소, 날짜…","exp.over":"상공 통과만","exp.east":"동쪽 방향만","exp.in":"일본 EEZ 안","exp.out":"일본 EEZ 밖","exp.unk":"낙하 지점 미공표","exp.off":"방위성 공식 판정만","exp.count":"전체 $T발 중 $N발","exp.note":"한 행이 미사일 한 발(1998년 이후). 행 클릭 시 상세 표시, 열 제목 클릭 시 정렬.","col.date":"날짜","col.time":"시각","col.mis":"미사일","col.cls":"분류","col.fac":"발사 장소","col.brg":"방위","col.rng":"사거리 km","col.apo":"정점 km","col.sea":"낙하 해역","col.eez":"EEZ","col.over":"일본 상공 통과","vd.in":"안","vd.out":"밖","vd.est":" 추정","vd.na":"미상","vd.yes":"예","cls.HGV":"극초음속 활공체","cls.ICBM":"대륙간","cls.IRBM":"중장거리","cls.MRBM":"준중거리","cls.SLBM":"잠수함발사","cls.SLV":"위성 발사체","cls.SRBM":"단거리","cls.Unknown":"미공표","sea.sea-of-japan":"동해","sea.yellow-sea":"서해 / 황해","sea.pacific-ocean":"태평양","sea.north-korea":"북한 내륙","sea.unknown":"미상","sea.na":"해당 없음","tt.miss":"발사 미사일 수","tt.occ":"발사 회수","leg.in2":"EEZ 안","leg.out2":"밖","leg.unk2":"미상","tl.hover":"* 막대나 마커에 커서를 올리면 수치 표시","tl.k1":"막대: 발사된 미사일 수 — 일본 EEZ 안","tl.k2":"밖","tl.k3":"낙하 지점 미공표","tl.k4":"선: 발사 회수(미사일 수와 무관하게 한 번의 발사 사건)","a.lang":"언어","a.theme":"밝은 모드와 어두운 모드 전환","a.map":"선택한 달의 북한 미사일 궤적이 표시된 동해 지도","a.zin":"확대","a.zout":"축소","a.zrst":"기본 화면으로","a.ring":"평양 기준 거리 링","a.tzin":"타임라인 확대","a.tzout":"타임라인 축소","a.tzrst":"타임라인 전체 보기",
   "lay.reset":"전체 해제 · 일본 EEZ로","leg.tab":"범례",
   "leg.gImp":"착탄 지점","leg.gUnc":"재구성","leg.gRef":"참조","leg.cap":"수도","tl.zoom":"확대",
-  "geo.hint":"색이 진하면 표시, 흐리면 숨김입니다. 범주를 눌러 켜고 끄세요.",
-  "cat.N":"핵실험","cat.U":"유엔 안보리","cat.K":"남북","cat.S":"미국","cat.J":"일본","cat.R":"러시아–북한","geo.sum":"전체 $T건 중 $N건 표시","geo.lim":" · $ 기간으로 한정","geo.nores":"이 필터에 해당하는 사건이 없습니다.","geo.nolink":"확인된 출처 없음",
-  "log.n":"발","log.rangeNA":"사거리 미상","log.apogee":"정점 고도","log.nopub":"미공표","chip.in":"EEZ 안","chip.out":"EEZ 밖","chip.unk":"낙하 지점 미상","chip.over":"일본 상공 통과","chip.est":"추정","log.none":"이 기간에 기록된 발사가 없습니다.","log.noneE":"이 기간에 기록된 동쪽 방향 발사가 없습니다.","log.goto":"(으)로 이동 ⇥","map.hint":"확대·축소는 스크롤, 이동은 끌기","ring.py":"평양에서 $ km","ring.km":"$ km",
-  "cty.kp":"북한","cty.kr":"한국","cty.jp":"일본","cty.us":"미국","cty.cn":"중국",
+  "geo.hint":"색이 진하면 표시, 흐리면 숨김. 범주를 클릭해 켜고 끔.",
+  "cat.N":"핵실험","cat.U":"유엔 안보리","cat.K":"남북","cat.S":"미국","cat.J":"일본","cat.R":"러시아–북한","geo.sum":"전체 $T건 중 $N건 표시","geo.lim":" · $ 기간으로 한정","geo.nores":"이 필터에 해당하는 사건 없음.","geo.nolink":"확인된 출처 없음",
+  "log.n":"발","log.rangeNA":"사거리 미상","log.apogee":"정점 고도","log.nopub":"미공표","chip.in":"EEZ 안","chip.out":"EEZ 밖","chip.unk":"낙하 지점 미상","chip.over":"일본 상공 통과","chip.est":"추정","log.none":"이 기간에 기록된 발사 없음.","log.noneE":"이 기간에 기록된 동쪽 방향 발사 없음.","log.goto":"(으)로 이동 ⇥","map.hint":"확대·축소는 스크롤, 이동은 끌기","ring.py":"평양에서 $ km","ring.km":"$ km",
+  "cty.kp":"북한","cty.kr":"남한","cty.jp":"일본","cty.us":"미국","cty.cn":"중국",
 },
- ja:{"tab.log":"月別記録","tab.det":"発射の詳細","tab.stat":"年次統計","tab.ctx":"地政学的出来事",
+ ja:{"stat.mis":"ミサイル","stat.occ":"$Y年の発射回数","log.open":"詳細を見る","geo.how":"北朝鮮のミサイル発射に関連する地政学的な出来事を、年ごとにまとめた一覧だ。政府機関の発表、報道資料、報告書など、公開されている情報をもとに作成している。リンクのある出来事は、その根拠となる信頼できる情報源につながっている。リンクのない出来事は、現在内部で確認中だ。この一覧は毎月更新される。","tab.log":"月別記録","tab.det":"発射の詳細","tab.stat":"年次統計","tab.ctx":"地政学的出来事",
   "btn.play":"再生","btn.next":"次の発射 ⇥","lbl.speed":"速度","lbl.month":"月","lbl.year":"年",
   "lbl.all":"すべての発射","lbl.east":"東方向のみ","btn.reset":"リセット","btn.csv":"CSVダウンロード","btn.apply":"適用",
   "kpi.month":"今月の発数 / 回数","kpi.year":"今年の発数 / 回数","kpi.cum":"累計の発数 / 回数","kpi.cumA":"発数 / 回数","kpi.cumB":"東方向の発数 / 回数","kpi.since":"、1998年1月以降",
-  "kpi.in":"日本のEEZ内、累計","kpi.over":"日本上空通過、累計",
+  "kpi.in":"日本のEEZ内（累計）","kpi.over":"日本上空通過（累計）",
   "leg.in":"日本のEEZ内（防衛省）","leg.out":"EEZ外","leg.unk":"落下地点不明",
   "leg.eez":"日本のEEZ（概略）","leg.est":"推定地点＋誤差","leg.cfl":"EEZの帰属で見解が異なる",
-  "map.foot":"公式の数値がない落下地点は、発射地点・方位・公表された飛距離から再構成したものです。実測ではなく推定です。",
+  "map.foot":"公式の数値がない落下地点は、発射地点・方位・公表された飛距離から再構成したものだ。実測ではなく推定だ。",
   "tl.head":"ミサイル発射統計","band.lbl":"指導者の区間：",
   "lay.btn":"⊞ 地図レイヤー","lay.eez":"排他的経済水域","lay.jp":"日本（基本レイヤー）","lay.kr":"韓国",
   "lay.kp":"北朝鮮","lay.cn":"中国","lay.ru":"ロシア","lay.mil":"軍事施設（市町村単位）",
   "lay.mkr":"韓国","lay.mjp":"日本・在日米軍","lay.mkp":"北朝鮮","lay.mcn":"中国","lay.mru":"ロシア",
   "lay.sea":"海の利用","lay.port":"主要港湾","lay.lane":"海上航路と海峡","lay.unc":"不確実性",
   "lay.err":"推定地点の誤差楕円",
-  "lay.note":"軍事施設は公開資料に基づき市町村単位でのみ表示しています。文脈情報であり、個々の発射についての主張ではありません。",
+  "lay.note":"軍事施設は公開資料に基づき市町村単位でのみ表示している。文脈情報であり、個々の発射についての主張ではない。",
   "geo.scope":"地図に表示中の期間のみ","geo.all":"すべての分類",
   "h.src":"出典とライセンス","h.two":"二つの帳簿、二つの合計","h.draw":"落下地点の描き方",
   "h.off":"公式判断を付す基準","h.dis":"二つの当局の判断が分かれる場合","h.care":"読む際の注意",
   "h1.a":"北朝鮮ミサイル発射","h1.b":"トラッカー","credit":"制作","th.dark":"ダーク","th.light":"ライト",
-  "exp.title":"北朝鮮ミサイル発射トラッカー","exp.y1":"開始年","exp.y2":"終了年","exp.rg":"政権","exp.any":"すべて","exp.kji":"金正日（2011年12月17日まで）","exp.kju":"金正恩（2011年12月17日から）","exp.cls":"ミサイルの分類","exp.mis":"ミサイル名","exp.eez":"EEZ判断","exp.sea":"落下海域","exp.fac":"発射地点","exp.q":"検索","exp.ph":"ミサイル、地点、日付…","exp.over":"上空通過のみ","exp.east":"東方向のみ","exp.in":"日本のEEZ内","exp.out":"日本のEEZ外","exp.unk":"落下地点は未公表","exp.off":"防衛省の公式判断のみ","exp.count":"全$T発のうち$N発","exp.note":"1行が1発です（1998年以降）。行をクリックすると詳細が開き、列見出しをクリックすると並べ替えます。","col.date":"日付","col.time":"時刻","col.mis":"ミサイル","col.cls":"分類","col.fac":"発射地点","col.brg":"方位","col.rng":"飛距離 km","col.apo":"最高高度 km","col.sea":"落下海域","col.eez":"EEZ","col.over":"日本上空通過","vd.in":"内","vd.out":"外","vd.est":"（推定）","vd.na":"不明","vd.yes":"あり","cls.HGV":"極超音速滑空体","cls.ICBM":"大陸間","cls.IRBM":"中距離","cls.MRBM":"準中距離","cls.SLBM":"潜水艦発射","cls.SLV":"衛星打ち上げ機","cls.SRBM":"短距離","cls.Unknown":"未公表","sea.sea-of-japan":"日本海 / 東海","sea.yellow-sea":"黄海 / 西海","sea.pacific-ocean":"太平洋","sea.north-korea":"北朝鮮内陸","sea.unknown":"不明","sea.na":"該当なし","tt.miss":"発射された発数","tt.occ":"発射回数","leg.in2":"EEZ内","leg.out2":"外","leg.unk2":"不明","tl.hover":"* 棒またはマーカーにカーソルを合わせると数値が表示されます","tl.k1":"棒：発射された発数 — 日本のEEZ内","tl.k2":"外","tl.k3":"落下地点は未公表","tl.k4":"線：発射回数（発数にかかわらず一度の発射）","a.lang":"言語","a.theme":"ライトとダークの切り替え","a.map":"選択した月の北朝鮮ミサイルの軌跡を示す日本海の地図","a.zin":"拡大","a.zout":"縮小","a.zrst":"初期表示に戻す","a.ring":"平壌からの距離リング","a.tzin":"タイムラインを拡大","a.tzout":"タイムラインを縮小","a.tzrst":"タイムライン全体を表示",
+  "exp.title":"北朝鮮ミサイル発射トラッカー","exp.y1":"開始年","exp.y2":"終了年","exp.rg":"政権","exp.any":"すべて","exp.kji":"金正日（キム・ジョンイル）— 2011年12月17日まで","exp.kju":"金正恩（キム・ジョンウン）— 2011年12月17日から","exp.cls":"ミサイルの分類","exp.mis":"ミサイル名","exp.eez":"EEZ判断","exp.sea":"落下海域","exp.fac":"発射地点","exp.q":"検索","exp.ph":"ミサイル、地点、日付…","exp.over":"上空通過のみ","exp.east":"東方向のみ","exp.in":"日本のEEZ内","exp.out":"日本のEEZ外","exp.unk":"落下地点は未公表","exp.off":"防衛省の公式判断のみ","exp.count":"全$T発のうち$N発","exp.note":"1行が1発（1998年以降）。行をクリックすると詳細が開き、列見出しをクリックすると並べ替える。","col.date":"日付","col.time":"時刻","col.mis":"ミサイル","col.cls":"分類","col.fac":"発射地点","col.brg":"方位","col.rng":"飛距離 km","col.apo":"最高高度 km","col.sea":"落下海域","col.eez":"EEZ","col.over":"日本上空通過","vd.in":"内","vd.out":"外","vd.est":"（推定）","vd.na":"不明","vd.yes":"あり","cls.HGV":"極超音速滑空体","cls.ICBM":"大陸間","cls.IRBM":"中距離","cls.MRBM":"準中距離","cls.SLBM":"潜水艦発射","cls.SLV":"衛星打ち上げ機","cls.SRBM":"短距離","cls.Unknown":"未公表","sea.sea-of-japan":"日本海 (Sea of Japan)","sea.yellow-sea":"黄海 / 西海","sea.pacific-ocean":"太平洋","sea.north-korea":"北朝鮮内陸","sea.unknown":"不明","sea.na":"該当なし","tt.miss":"発射された発数","tt.occ":"発射回数","leg.in2":"EEZ内","leg.out2":"外","leg.unk2":"不明","tl.hover":"* 棒またはマーカーにカーソルを合わせると数値が表示される","tl.k1":"棒：発射された発数 — 日本のEEZ内","tl.k2":"外","tl.k3":"落下地点は未公表","tl.k4":"線：発射回数（発数にかかわらず一度の発射）","a.lang":"言語","a.theme":"ライトとダークの切り替え","a.map":"選択した月の北朝鮮ミサイルの軌跡を示す日本海の地図","a.zin":"拡大","a.zout":"縮小","a.zrst":"初期表示に戻す","a.ring":"平壌からの距離リング","a.tzin":"タイムラインを拡大","a.tzout":"タイムラインを縮小","a.tzrst":"タイムライン全体を表示",
   "lay.reset":"すべて解除・日本EEZへ","leg.tab":"凡例",
   "leg.gImp":"落下地点","leg.gUnc":"再構成","leg.gRef":"参照","leg.cap":"首都","tl.zoom":"拡大",
-  "geo.hint":"色が濃い＝表示、薄い＝非表示。分類をクリックして切り替えます。",
-  "cat.N":"核実験","cat.U":"国連安保理","cat.K":"南北","cat.S":"米国","cat.J":"日本","cat.R":"ロシア–北朝鮮","geo.sum":"全$T件のうち$N件を表示","geo.lim":" · $ の期間に限定","geo.nores":"このフィルターに該当する出来事はありません。","geo.nolink":"確認できる出典なし",
-  "log.n":"発","log.rangeNA":"飛距離不明","log.apogee":"最高高度","log.nopub":"未公表","chip.in":"EEZ内","chip.out":"EEZ外","chip.unk":"落下地点不明","chip.over":"日本上空通過","chip.est":"推定","log.none":"この期間に記録された発射はありません。","log.noneE":"この期間に記録された東方向の発射はありません。","log.goto":"へ移動 ⇥","map.hint":"スクロールで拡大縮小、ドラッグで移動","ring.py":"平壌から $ km","ring.km":"$ km",
+  "geo.hint":"色が濃い＝表示、薄い＝非表示。分類をクリックして切り替える。",
+  "cat.N":"核実験","cat.U":"国連安保理","cat.K":"南北","cat.S":"米国","cat.J":"日本","cat.R":"ロシア–北朝鮮","geo.sum":"全$T件のうち$N件を表示","geo.lim":" · $ の期間に限定","geo.nores":"このフィルターに該当する出来事はない。","geo.nolink":"確認できる出典なし",
+  "log.n":"発","log.rangeNA":"飛距離不明","log.apogee":"最高高度","log.nopub":"未公表","chip.in":"EEZ内","chip.out":"EEZ外","chip.unk":"落下地点不明","chip.over":"日本上空通過","chip.est":"推定","log.none":"この期間に記録された発射はない。","log.noneE":"この期間に記録された東方向の発射はない。","log.goto":"へ移動 ⇥","map.hint":"スクロールで拡大縮小、ドラッグで移動","ring.py":"平壌から $ km","ring.km":"$ km",
   "cty.kp":"北朝鮮","cty.kr":"韓国","cty.jp":"日本","cty.us":"米国","cty.cn":"中国",
 }
 };
 // launch-detail field labels, keyed by their English label
 const I18N_F={
  ko:{"Date":"날짜","Time of launch":"발사 시각","Launch site":"발사 장소","Missile":"미사일",
-  "On the name":"명칭에 대하여","Name in the source data":"원자료의 명칭","Launch site in the source data":"원자료의 발사 장소",
-  "Class":"분류","Missiles in this salvo":"이 일제사격의 미사일 수","Missiles that day":"그날의 미사일 수",
-  "Missiles that month":"그달의 미사일 수","Missiles that year":"그해의 미사일 수","Flight distance":"비행 거리",
-  "Peak altitude":"정점 고도","Direction of fire":"발사 방위","Estimated impact point":"추정 낙하 지점",
+  "On the name":"명칭","Name in the source data":"원자료 상 명칭","Launch site in the source data":"발사 장소",
+  "Class":"분류","Missiles in this salvo":"한 번에 발사된\n미사일 수","Missiles that day":"해당 일자의\n미사일 발사 수",
+  "Missiles that month":"해당 월의\n미사일 발사 수","Missiles that year":"해당 연도\n미사일 발사 수","Flight distance":"비행 거리",
+  "Peak altitude":"정점 고도 (apogee)","Direction of fire":"발사 방위","Estimated impact point":"추정 낙하 지점",
   "Margin of error on that point":"그 지점의 오차 범위","Landing area":"낙하 해역","EEZ verdict":"EEZ 판정",
-  "MOD statement used":"근거가 된 방위성 발표","Why there is no official verdict":"공식 판정이 없는 이유","Source of this record":"이 기록의 출처",
+  "MOD statement used":"출처","Why there is no official verdict":"출처","Source of this record":"출처",
   "What MOD said about that day":"그날에 대한 방위성의 서술","Two authorities disagree":"두 당국의 판단이 다름",
   "North Korea's account differs":"북한의 설명이 다름","Overflight of Japan":"일본 상공 통과","North Korean leader":"북한 지도자"},
  ja:{"Date":"日付","Time of launch":"発射時刻","Launch site":"発射地点","Missile":"ミサイル",
@@ -1489,7 +1949,7 @@ const I18N_F={
   "What MOD said about that day":"その日についての防衛省の記述","Two authorities disagree":"二つの当局で判断が異なる",
   "North Korea's account differs":"北朝鮮の説明は異なる","Overflight of Japan":"日本上空通過","North Korean leader":"北朝鮮の指導者"}
 };
-const CNAME={ko:{"North Korea":"북한","South Korea":"한국","Japan":"일본","United States":"미국","China":"중국"},
+const CNAME={ko:{"North Korea":"북한","South Korea":"남한","Japan":"일본","United States":"미국","China":"중국"},
              ja:{"North Korea":"北朝鮮","South Korea":"韓国","Japan":"日本","United States":"米国","China":"中国"}};
 function T(k,fb){try{const d=I18N[LANG];return (d&&d[k])||fb;}catch(e){return fb;}}
 function TF(k){const d=I18N_F[LANG];return (d&&d[k])||k;}
@@ -1522,8 +1982,13 @@ function applyLang(l){
   if(typeof relabelMap==="function") relabelMap();
   if(typeof drawBands==="function") drawBands();
   if(typeof drawLog==="function") drawLog();   // drawLog() also refreshes the leader rows
+  if(typeof renderList==="function"&&!paneList.hidden) renderList();
+  if(typeof dwHead==="function") dwHead();
+  if(typeof dwView!=="undefined"&&dwView==="stats"&&stageEl.classList.contains("dw-open")) renderStats();
   if(typeof renderDetail==="function"&&selI!=null) renderDetail(L.find(d=>d.i===selI));
   if(typeof renderGeo==="function") renderGeo();
+  try{ if(typeof renderStats==="function") renderStats(); if(typeof renderList==="function") renderList(); }catch(e){}
+  if(typeof window.__l10nRun==="function") window.__l10nRun();
   if(typeof fillSelects==="function"){fillSelects();}
   if(typeof drawTable==="function") drawTable();
   // placeholders carry their own key
@@ -1553,21 +2018,15 @@ document.querySelectorAll(".topbar .seg2 button").forEach(b=>b.onclick=()=>apply
   window.__applyTheme=()=>apply(mode);
 })();
 
-// The key sits out of the way until the cursor reaches its corner, then fades back out.
+// The key opens and closes on click only (no hover).
 (function(){
-  const lg=document.getElementById("legendBox"), tab=document.getElementById("legTab"),
-        box=document.querySelector(".mapbox");
-  let hide=null;
-  const show=()=>{clearTimeout(hide);lg.classList.add("show");
-    hide=setTimeout(()=>lg.classList.remove("show"),2600);};
-  tab.addEventListener("mouseenter",show);
-  lg.addEventListener("mouseenter",()=>{clearTimeout(hide);lg.classList.add("show");});
-  lg.addEventListener("mouseleave",show);
-  box.addEventListener("mousemove",e=>{
-    const r=box.getBoundingClientRect();
-    if(e.clientX-r.left<230 && r.bottom-e.clientY<190) show();
-  });
-  show();   // say hello once on load
+  const lg=document.getElementById("legendBox"), tab=document.getElementById("legTab");
+  const set=o=>{lg.classList.toggle("show",o);lg.setAttribute("aria-hidden",String(!o));tab.setAttribute("aria-expanded",String(o));};
+  tab.setAttribute("role","button"); tab.tabIndex=0;
+  tab.onclick=()=>set(!lg.classList.contains("show"));
+  tab.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tab.onclick();}};
+  lg.onclick=()=>set(false);
+  set(false);
 })();
 
 // ---------- map layers ----------
@@ -1656,26 +2115,99 @@ const FACNAME={
  "Samsok missle test site #2":"Samsok missile test site #2",
  "Samsok missle test site #3":"Samsok missile test site #3",
  "Unknown":"not published"};
-const misName=v=>MISNAME[v]||v||T("log.nopub","not published");
-const facName=v=>FACNAME[v]||v||T("log.nopub","not published");
+
+const FACTR={ko:{"Baegun": "백운", "Chongju": "정주", "Chunghwa": "중화", "East Pyongyang": "평양 동부", "Hodo Peninsula": "호도반도", "Hungnam": "흥남", "Hwangju": "황주", "Jangyon": "장연", "Kaechon Airbase": "개천비행장", "Kaesong": "개성", "Kanggye": "강계", "Kittaeryong Missile Base": "기태령 미사일기지", "Koksan": "곡산", "Kusong Testing Ground": "구성 시험장", "Kwail Airbase": "과일비행장", "Lake Taesong": "대성호", "Lake Yonpung": "연풍호", "Masikryong": "마식령", "Monggumpo": "몽금포", "Munchon": "문천", "Mupyong-ni Arms Plant": "무평리 군수공장", "Nampo": "남포", "North Kusong Testing Ground": "북구성 시험장", "Panghyon": "방현", "Panghyon Airbase": "방현비행장", "Pukchang Airfield": "북창비행장", "Pyongsong Field": "평성", "Pyongyang Sunan International Airport": "평양 순안국제공항", "Ragwon County": "락원군", "Ryokpo": "력포", "Samsok": "삼석", "Samsok missile test site": "삼석 미사일 시험장", "Samsok missile test site #2": "삼석 미사일 시험장 #2", "Samsok missile test site #3": "삼석 미사일 시험장 #3", "Sangum-ri": "상금리", "Sariwon": "사리원", "Sinpo Shipyard": "신포 조선소", "Sohae Satellite Launching Station (Tongchang-ri)": "서해위성발사장 (동창리)", "Sonchon": "선천", "Sondok": "선덕", "Sondok Airbase": "선덕비행장", "South Wonsan": "원산 남부", "Sukchon": "숙천", "Sunan": "순안", "Sunchon Airbase": "순천비행장", "Taechon Reservoir": "태천저수지", "Taegwan County": "대관군", "Tongchon": "통천", "Tonghae Satellite Launching Ground (Musudan-ri)": "동해위성발사장 (무수단리)", "Uiju": "의주", "West Sunan": "순안 서부", "Wonsan Kalma International Airport": "원산갈마국제공항", "Yangdok": "양덕", "Yonghung": "영흥", "Yonghung Bay": "영흥만", "Yonpo Airport": "연포공항", "Chihari Missile Base": "치하리 미사일기지"},ja:{"Baegun": "ペグン", "Chongju": "定州", "Chunghwa": "中和", "East Pyongyang": "平壌東部", "Hodo Peninsula": "虎島半島", "Hungnam": "興南", "Hwangju": "黄州", "Jangyon": "長淵", "Kaechon Airbase": "价川飛行場", "Kaesong": "開城", "Kanggye": "江界", "Kittaeryong Missile Base": "キッテリョンミサイル基地", "Koksan": "谷山", "Kusong Testing Ground": "亀城試験場", "Kwail Airbase": "クァイル飛行場", "Lake Taesong": "テソン湖", "Lake Yonpung": "ヨンプン湖", "Masikryong": "馬息嶺", "Monggumpo": "夢金浦", "Munchon": "文川", "Mupyong-ni Arms Plant": "ムピョンニ兵器工場", "Nampo": "南浦", "North Kusong Testing Ground": "北亀城試験場", "Panghyon": "パンヒョン", "Panghyon Airbase": "パンヒョン飛行場", "Pukchang Airfield": "北倉飛行場", "Pyongsong Field": "平城", "Pyongyang Sunan International Airport": "平壌順安国際空港", "Ragwon County": "洛原郡", "Ryokpo": "力浦", "Samsok": "三石", "Samsok missile test site": "三石ミサイル試験場", "Samsok missile test site #2": "三石ミサイル試験場 #2", "Samsok missile test site #3": "三石ミサイル試験場 #3", "Sangum-ri": "サングムリ", "Sariwon": "沙里院", "Sinpo Shipyard": "新浦造船所", "Sohae Satellite Launching Station (Tongchang-ri)": "西海衛星発射場（東倉里）", "Sonchon": "宣川", "Sondok": "宣徳", "Sondok Airbase": "宣徳飛行場", "South Wonsan": "元山南部", "Sukchon": "粛川", "Sunan": "順安", "Sunchon Airbase": "順川飛行場", "Taechon Reservoir": "泰川貯水池", "Taegwan County": "大館郡", "Tongchon": "通川", "Tonghae Satellite Launching Ground (Musudan-ri)": "東海衛星発射場（舞水端里）", "Uiju": "義州", "West Sunan": "順安西部", "Wonsan Kalma International Airport": "元山葛麻国際空港", "Yangdok": "陽徳", "Yonghung": "永興", "Yonghung Bay": "永興湾", "Yonpo Airport": "連浦空港", "Chihari Missile Base": "チハリミサイル基地"}};
+function trFac(v){const d=FACTR[LANG];return (d&&d[v])||v;}
+function trMis(v){
+  if(LANG==="ko"){ return v.replace(/ER Scud/g,"사거리연장 스커드").replace(/Scud/g,"스커드").replace(/MaRV/g,"기동탄두")
+    .replace(/Hwasong-/g,"화성-").replace(/(화성-\d+)([A-E])\b/g,(m,a,b)=>a+"가나다라마"["ABCDE".indexOf(b)]).replace(/-Da-/g,"-다-")
+    .replace(/Pukguksong-/g,"북극성-").replace(/Paektusan-/g,"백두산-").replace(/Chollima-/g,"천리마-")
+    .replace(/Unha/g,"은하").replace(/Taepodong/g,"대포동").replace(/Nodong/g,"노동").replace(/Musudan/g,"무수단")
+    .replace(/600 mm MRL/g,"600mm 방사포").replace(/New IRBM/g,"신형 IRBM").replace(/rail-mobile/g,"철도 기동").replace(/silo-based/g,"사일로 발사"); }
+  if(LANG==="ja"){ return v.replace(/ER Scud/g,"射程延長型スカッド").replace(/Scud/g,"スカッド").replace(/MaRV/g,"機動弾頭")
+    .replace(/-Da-/g,"-ダ-").replace(/Hwasong-/g,"火星-").replace(/Pukguksong-/g,"北極星-").replace(/Paektusan-/g,"白頭山-").replace(/Chollima-/g,"千里馬-")
+    .replace(/Unha/g,"銀河").replace(/Taepodong/g,"テポドン").replace(/Nodong/g,"ノドン").replace(/Musudan/g,"ムスダン")
+    .replace(/600 mm MRL/g,"600mm多連装ロケット").replace(/New IRBM/g,"新型IRBM").replace(/rail-mobile/g,"鉄道機動").replace(/silo-based/g,"サイロ発射"); }
+  return v; }
+const misName=v=>trMis(MISNAME[v]||v||T("log.nopub","not published"));
+const facName=v=>trFac(FACNAME[v]||v)||T("log.nopub","not published");
 const MONTHN=m=>new Date(+m.slice(0,4),+m.slice(5,7)-1,1).toLocaleString("en-GB",{month:"long",year:"numeric"});
 let selI=null;
-const TABS={log:[document.getElementById("tabLog"),document.getElementById("paneLog")],
-            detail:[document.getElementById("tabDetail"),document.getElementById("paneDetail")],
-            stats:[document.getElementById("tabStats"),document.getElementById("paneStats")],
-            ctx:[document.getElementById("tabCtx"),document.getElementById("paneCtx")]};
-const paneLog=TABS.log[1], paneDet=TABS.detail[1], paneStats=TABS.stats[1];
+const paneLog=document.getElementById("paneLog"), paneList=document.getElementById("paneList"),
+      paneDet=document.getElementById("paneDetail"), paneStats=document.getElementById("paneStats"),
+      paneCtxEl=document.getElementById("paneCtx");
+const TABS={log:[document.getElementById("tabLog"),paneLog],
+            detail:[document.getElementById("tabDetail"),paneList],
+            ctx:[document.getElementById("tabCtx"),paneCtxEl]};
+const tabStats=document.getElementById("tabStats");
+const stageEl=document.querySelector(".stage"), logEl=document.querySelector("aside.log"),
+      drawerEl=document.getElementById("drawer"), dwMonth=document.getElementById("dwMonth"),
+      dwTitle=document.getElementById("dwTitle"), dwBack=document.getElementById("dwBack");
+let mainTab="log", dwView="detail";
+const overlayMQ=matchMedia("(max-width:1199px)");
+const byTimeAsc=(a,b)=>a.date_kst.localeCompare(b.date_kst)||String(a.time_kst||"").localeCompare(String(b.time_kst||""))||a.i-b.i;
+function dwHead(){
+  dwTitle.textContent=dwView==="month"?document.getElementById("mLabel").textContent
+    :dwView==="stats"?T("tab.stat","Year Stats")+" · "+curY()
+    :T("tab.det","Launch Detail");
+  dwBack.hidden=!(overlayMQ.matches||(dwView==="detail"&&mainTab==="log"));
+}
+function openDrawer(view){
+  dwView=view; stageEl.classList.add("dw-open"); drawerEl.setAttribute("aria-hidden","false");
+  dwMonth.hidden=view!=="month"; paneDet.hidden=view!=="detail"; paneStats.hidden=view!=="stats";
+  tabStats.classList.toggle("on",view==="stats"); tabStats.setAttribute("aria-selected",String(view==="stats"));
+  if(view==="stats") renderStats();
+  dwHead(); document.querySelector(".drawer-body").scrollTop=0;
+}
+function closeDrawer(){
+  stageEl.classList.remove("dw-open"); drawerEl.setAttribute("aria-hidden","true");
+  tabStats.classList.remove("on"); tabStats.setAttribute("aria-selected","false");
+}
 function showTab(which){
+  if(which==="stats"){ openDrawer("stats"); return; }
+  mainTab=which; logEl.dataset.tab=which;
+  if(which==="ctx") closeDrawer();
   for(const k in TABS){const [t,p]=TABS[k];const on=k===which;
     p.hidden=!on; t.classList.toggle("on",on); t.setAttribute("aria-selected",String(on));}
+  if(which==="detail"){
+    renderList();
+    if(selI==null){const lat=L.filter(inScope).sort(byTimeAsc).pop(); if(lat){openDetail(lat);return;}}
+    openDrawer("detail");
+  }else if(which==="log"){ openDrawer(selI!=null&&dwView==="detail"?"detail":"month"); }
+  else if(which==="ctx"){ return; }
+  dwHead();
 }
 TABS.log[0].onclick=()=>showTab("log");
-TABS.detail[0].onclick=()=>{showTab("detail"); if(selI==null) renderDetail(null);};
-TABS.stats[0].onclick=()=>{showTab("stats"); renderStats();};
+TABS.detail[0].onclick=()=>showTab("detail");
+tabStats.onclick=()=>{ if(dwView==="stats"&&stageEl.classList.contains("dw-open")) closeDrawer(); else showTab("stats"); };
 TABS.ctx[0].onclick=()=>{showTab("ctx"); if(typeof renderGeo==="function") renderGeo();};
-document.getElementById("kMonthBox").onclick=()=>{showTab("stats"); renderStats();};
+document.getElementById("kMonthBox").onclick=()=>showTab("stats");
+document.getElementById("openMonth").onclick=()=>openDrawer("month");
+dwBack.onclick=()=>{ if(overlayMQ.matches) closeDrawer(); else openDrawer("month"); };
+overlayMQ.addEventListener("change",dwHead);
+document.getElementById("dwClose").onclick=closeDrawer;
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&stageEl.classList.contains("dw-open")&&overlayMQ.matches) closeDrawer(); });
+
+// ---------- launch list (every year and month, newest first) ----------
+function renderList(){
+  const vis=L.filter(inScope).sort(byTimeAsc).reverse();
+  const nY=d3.rollup(vis,v=>v.length,d=>d.ym.slice(0,4)), nM=d3.rollup(vis,v=>v.length,d=>d.ym);
+  let h="",ly=null,lm=null;
+  vis.forEach(d=>{
+    const y=d.ym.slice(0,4);
+    if(y!==ly){ly=y;lm=null;h+=`<div class="lyr"><b>${y}</b><span>${nY.get(y)}</span></div>`;}
+    if(d.ym!==lm){lm=d.ym;h+=`<div class="lmo"><b>${fmtM(d.ym)}</b><span>${nM.get(d.ym)}</span><i></i></div>`;}
+    const vd=d.status==="in"?`<span class="vd in">${T("vd.in","Inside")}</span>`
+      :d.status==="out"?`<span class="vd out">${T("vd.out","Outside")}</span>`:`<span class="vd unk">${T("vd.na","N/A")}</span>`;
+    h+=`<button type="button" class="lrow${d.i===selI?" sel":""}" data-i="${d.i}"><span class="ld">${d.date_kst.slice(5)}</span><span class="lt">${esc(misName(d.missile))}<small>${esc(facName(d.facility))}</small></span>${vd}</button>`;});
+  paneList.innerHTML=`<div class="lscroll">${h||`<p class="none" style="padding:20px">—</p>`}</div>`;
+  const sc=paneList.querySelector(".lscroll"), sel=paneList.querySelector(".lrow.sel");
+  if(sel) sc.scrollTop=Math.max(0,sel.offsetTop-sc.clientHeight/2+sel.offsetHeight/2);
+  sc.onclick=e=>{const b=e.target.closest(".lrow"); if(b) openDetail(L.find(o=>o.i===+b.dataset.i));};
+}
 
 // ---------- year statistics ----------
+const bigRow=(m,o,Y)=>`<div class="big"><b>${m}</b><span>${T("stat.mis","missiles")}</span><i>/</i><b>${o}</b><span>${T("stat.occ","launch occasions in $Y").replace("$Y",Y)}</span></div>`;
 function renderStats(){
   const Y=curY(), vis=L.filter(inScope);
   const yr=vis.filter(d=>d.ym.slice(0,4)===Y);
@@ -1683,7 +2215,7 @@ function renderStats(){
   const rank=byYear.findIndex(([k])=>k===Y)+1;
   const ord=n=>n+(n%10===1&&n%100!==11?"st":n%10===2&&n%100!==12?"nd":n%10===3&&n%100!==13?"rd":"th");
   if(!yr.length){
-    paneStats.innerHTML=`<div class="big"><b>0<em> / 0</em></b><span>missiles / launch occasions in ${Y}</span></div>
+    paneStats.innerHTML=`${bigRow(0,0,Y)}
       <p class="none">No ${scope==="jp"?"eastward ":""}launches are recorded for ${Y}. Pick another year on the timeline.</p>`;
     return;}
   const per=MON3.map((nm,k)=>{const key=`${Y}-${String(k+1).padStart(2,"0")}`;
@@ -1691,7 +2223,7 @@ function renderStats(){
     return {k:key,nm,n:v.length,occ:occCount(v),in:v.filter(d=>d.status==="in").length,
       out:v.filter(d=>d.status==="out").length,unk:v.filter(d=>d.status==="unk").length};});
   const mx=d3.max(per,p=>p.n)||1;
-  const W=320,H=116,PAD=16,BT=10,BB=26;
+  const W=320,H=170,PAD=16,BT=10,BB=26;
   const bw=(W-PAD*2)/12;
   const bars=per.map((p,k)=>{
     const x0=PAD+k*bw+2, w=bw-4; let yy=H-BB; let out="";
@@ -1702,7 +2234,7 @@ function renderStats(){
     return (sel?`<rect class="selband" x="${PAD+k*bw}" y="${BT-4}" width="${bw}" height="${H-BB-BT+8}"/>`:"")
       +out
       +(p.n?`<text class="cnt" x="${x0+w/2}" y="${(yy-3).toFixed(1)}" text-anchor="middle">${p.n}</text>`:"")
-      +`<text x="${x0+w/2}" y="${H-BB+13}" text-anchor="middle">${p.nm[0]}</text>`
+      +`<text x="${x0+w/2}" y="${H-BB+14}" text-anchor="middle">${k+1}</text>`
       +`<rect class="hit" data-k="${p.k}" x="${PAD+k*bw}" y="${BT-4}" width="${bw}" height="${H-BT-4}"><title>${p.nm} ${Y} — ${p.n} missile${p.n===1?"":"s"} on ${p.occ} occasion${p.occ===1?"":"s"}</title></rect>`;
   }).join("");
   // launch occasions drawn as a line over the missile bars, same scale as the main timeline
@@ -1717,15 +2249,15 @@ function renderStats(){
   const tbl=(rows,h1)=>`<table><thead><tr><th>${h1}</th><th class="n" style="text-align:right">n</th></tr></thead><tbody>`
     +rows.map(([k,n])=>`<tr><td>${esc(k==="Unknown"?"not published":k)}</td><td class="n">${n}</td></tr>`).join("")+`</tbody></table>`;
   paneStats.innerHTML=`
-    <div class="big"><b>${yr.length}<em> / ${occYr}</em></b><span>missiles / launch occasions in ${Y}</span></div>
+    ${bigRow(yr.length,occYr,Y)}
     <p class="rank">${ord(rank)} busiest year by missiles fired, of the ${byYear.length} years with launches on record${scope==="jp"?", counting eastward launches only":""}. Click a month to jump to it.</p>
-    <svg class="ymini" viewBox="0 0 ${W} ${H}" role="img" aria-label="Missiles (bars) and launch occasions (line) per month in ${Y}">${bars}${occLine}</svg>
+    <div class="ychart"><svg class="ymini" viewBox="0 0 ${W} ${H}" role="img" aria-label="Missiles (bars) and launch occasions (line) per month in ${Y}">${bars}${occLine}</svg>
     <div class="ctx-key ykey">
       <span><i class="sw in"></i>Missiles, inside Japan's EEZ</span>
       <span><i class="sw out"></i>Missiles, outside</span>
       <span><i class="sw unk"></i>Landing point not published</span>
       <span><svg width="24" height="10" aria-hidden="true"><line x1="1" y1="5" x2="23" y2="5" stroke="var(--ink)" stroke-width="1.6"/></svg>Launch occasions</span>
-    </div>
+    </div></div>
     <div class="statgrid">
       <div><b>${occYr}</b><span>launch occasions</span></div>
       <div><b>${days}</b><span>days with a launch</span></div>
@@ -1734,8 +2266,8 @@ function renderStats(){
       <div><b style="color:var(--inside)">${yr.filter(d=>d.status==="in").length}</b><span>landed inside Japan's EEZ</span></div>
       <div><b>${new Set(yr.map(d=>d.facility)).size}</b><span>launch sites used</span></div>
     </div>
-    <h4>Missiles by type</h4>${tbl(top("missile",6,misName),"Missile")}
-    <h4>By launch site</h4>${tbl(top("facility",6,facName),"Site")}
+    <div class="tbl2"><div><h4>Missiles by type</h4>${tbl(top("missile",6,misName),"Missile")}</div>
+    <div><h4>By launch site</h4>${tbl(top("facility",6,facName),"Site")}</div></div>
     <h4>${Y} in context</h4>${ctxList((CTX_BY_Y.get(Y)||[]))}`;
   paneStats.querySelectorAll("rect.hit").forEach(r=>r.onclick=()=>{
     const k=r.dataset.k;
@@ -1755,7 +2287,7 @@ function ctxList(items){
     return `<li style="--cc:${co}"><span class="mo"><span>${nm}</span>${m?`<em>${fmtM(m)}</em>`:""}</span><span class="tx">${linked(l,u,n)}</span></li>`;}).join("")+`</ul>`;
 }
 function renderDetail(d){
-  if(!d){paneDet.innerHTML=`<p class="none">Pick a launch — click a row in the month log, a marker on the map, or a row in the table below.</p>`;return;}
+  if(!d){paneDet.innerHTML=`<p class="none">Pick a launch: click a row in the list, a marker on the map, or a row in the table below.</p>`;return;}
   selI=d.i;
   const grp=sameLaunch(d), day=sameDay(d), yr=d.ym.slice(0,4);
   const inYear=L.filter(o=>o.ym.slice(0,4)===yr), inMonth=L.filter(o=>o.ym===d.ym);
@@ -1767,7 +2299,18 @@ function renderDetail(d){
     :d.official?`official verdict, Japan's Ministry of Defense — ${TIERTXT[d.off_tier]||"linked statement"}`
     :"estimate — reconstructed point tested against the Marine Regions boundary, not an official verdict";
   const ZN={JP:"Japan",KR:"South Korea",KP:"North Korea",CN:"China",RU:"Russia"};
-  const conflictRow=d.conflict?row("Two authorities disagree",
+  const ZNL={ko:{JP:"일본",KR:"남한",KP:"북한",CN:"중국",RU:"러시아"},ja:{JP:"日本",KR:"韓国",KP:"北朝鮮",CN:"中国",RU:"ロシア"}};
+  const conflictRow=d.conflict&&LANG==="ko"?row("Two authorities disagree",
+    `일본 방위성은 이 미사일이 <b>일본 EEZ 안</b>에 떨어졌다고 밝힘. 이 지도를 그리는 데 쓴 Marine Regions 경계 데이터는 재구성한 지점이 <b>${ZNL.ko[d.mr_zone]||d.mr_zone}</b> EEZ에 있다고 봄.`
+    +(d.mr_zone==="KR"?" 이 해역은 리앙쿠르 암초(일본은 다케시마, 남한은 독도라 부르며 남한이 실효 지배)에서 200해리 이내여서, 두 나라가 경계를 서로 다르게 긋음."
+      :d.mr_zone==="RU"?" 이 바다에서는 일본과 러시아 사이에 합의된 EEZ 경계가 없으며, 여기서의 차이는 재구성 자체의 오차 범위보다 작음."
+      :""),
+    "어느 쪽 해석도 정답으로 취급하지 않음"):d.conflict&&LANG==="ja"?row("Two authorities disagree",
+    `防衛省はこのミサイルが<b>日本のEEZ内</b>に落下したとしている。この地図の作成に用いたMarine Regionsの境界データでは、再構成した地点は<b>${ZNL.ja[d.mr_zone]||d.mr_zone}</b>のEEZ内にある。`
+    +(d.mr_zone==="KR"?"この海域はリアンクール岩礁（日本は竹島、韓国は独島と呼び韓国が実効支配）から200海里以内にあり、両国で境界の引き方が異なる。"
+      :d.mr_zone==="RU"?"この海域では日本とロシアの間でEEZの境界が合意されておらず、ここでの差は再構成自体の誤差の範囲より小さいものだ。"
+      :""),
+    "どちらの解釈も正解としては扱わない"):d.conflict?row("Two authorities disagree",
     `Japan's Ministry of Defense states this missile fell <b>inside Japan's EEZ</b>. The Marine Regions boundary layer used to draw this map places the reconstructed point in <b>${ZN[d.mr_zone]||d.mr_zone}'s</b> EEZ.`
     +(d.mr_zone==="KR"?" The water lies within 200 nautical miles of the Liancourt Rocks, which Japan claims as Takeshima and South Korea controls as Dokdo, so the two states draw the boundary differently."
       :d.mr_zone==="RU"?" Japan and Russia have no agreed EEZ boundary in this sea, and the gap here is smaller than the reconstruction's own margin of error."
@@ -1780,7 +2323,9 @@ function renderDetail(d){
     +(CLAIMS[d.date_kst]&&CLAIMS[d.date_kst].src?`<br>`+CLAIMS[d.date_kst].src.map(([l,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(l)} ↗</a>`).join(" · "):""),
     "recorded as a disagreement, not settled here"):"";
   const errRow=(d.est&&d.err_along_km)?row("Margin of error on that point",
-    `about <b>±${Math.round(d.err_along_km)} km</b> along the flight path, <b>±${Math.round(d.err_cross_km)} km</b> across it`,
+    LANG==="ko"?`비행 경로 방향으로 약 <b>±${Math.round(d.err_along_km)} km</b>, 좌우로 약 <b>±${Math.round(d.err_cross_km)} km</b>`
+    :LANG==="ja"?`飛行経路方向に約<b>±${Math.round(d.err_along_km)} km</b>、左右に約<b>±${Math.round(d.err_cross_km)} km</b>`
+    :`about <b>±${Math.round(d.err_along_km)} km</b> along the flight path, <b>±${Math.round(d.err_cross_km)} km</b> across it`,
     "published ranges are rounded, bearings are whole degrees, and the launch point is the site centroid"):"";
   const dayRow=d.day_note?row("What MOD said about that day",esc(d.day_note),"a day-level statement that does not identify individual missiles"):"";
   const relRow=d.off_release?row("MOD statement used",
@@ -1793,7 +2338,7 @@ function renderDetail(d){
     :d.status==="out"?`<span class="vd out">Outside Japan's EEZ</span>`:`<span class="vd unk">Landing point unknown</span>`; // already title case, no CSS shouting now
   paneDet.innerHTML=`
   <div class="det-hd">
-    <div class="nm">${esc(misName(d.missile))}</div>
+    <div class="nm">${esc(misName(d.missile)).replace(/(?<=[A-Za-z0-9가-힣ァ-ヿ一-鿿])-(?=[A-Za-z0-9가-힣ァ-ヿ一-鿿])/g,"\u2011")}</div>
     <div class="sb">${d.cls&&d.cls!=="Unknown"?`${d.cls} — ${CLSNAME[d.cls]||""}`:"class not published"} · launch ${k} of ${grp.length} in this salvo</div>
   </div>
   <dl>
@@ -1806,24 +2351,23 @@ function renderDetail(d){
     ${!d.supp&&misName(d.missile)!==d.missile?row("Name in the source data",esc(d.missile),"string as recorded in the CNS database"):""}
     ${!d.supp&&facName(d.facility)!==d.facility?row("Launch site in the source data",esc(d.facility),"string as recorded in the CNS database"):""}
     ${row("Class",d.cls==="Unknown"?"not published":`${d.cls} — ${CLSNAME[d.cls]||""}`)}
-    ${row("Missiles in this salvo",`<b>${grp.length}</b>`,grp.length>1?"fired together, same minute":"single missile")}
-    ${row("Missiles that day",`<b>${day.length}</b>`,d.date_kst)}
-    ${row("Missiles that month",`<b>${inMonth.length}</b>`,MONTHN(d.ym))}
-    ${row("Missiles that year",`<b>${inYear.length}</b>`,yr)}
     ${row("Flight distance",d.distance_km?`<b>~${d.distance_km.toLocaleString()} km</b>`:"not published","how far it flew, ground range")}
     ${row("Peak altitude",d.apogee_km?`<b>~${d.apogee_km.toLocaleString()} km</b>`:"not published","apogee, the top of the arc")}
     ${row("Direction of fire",d.bearing!=null?`<b>${d.bearing}°</b>`:"not published",d.bearing!=null?"compass bearing from the launch site (90° = due east)":"")}
     ${row("Estimated impact point",d.impact_lat!=null?`${d.impact_lat.toFixed(3)}°N, ${d.impact_lon.toFixed(3)}°E`:"not reconstructed",d.impact_lat!=null?"great-circle projection from site, bearing and range":"")}
-    ${row("Landing area",SEANAME[d.landing_sea]||d.landing_sea||"not published")}
+    ${row("Landing area",d.landing_sea?TSEA(d.landing_sea):"not published")}
     ${errRow}
     ${row("EEZ verdict",vd,how)}
     ${relRow}
+    ${row("Missiles in this salvo",`<b>${grp.length}</b>`,grp.length>1?"fired together, same minute":"single missile")}
+    ${row("Missiles that day",`<b>${day.length}</b>`,d.date_kst)}
+    ${row("Missiles that month",`<b>${inMonth.length}</b>`,MONTHN(d.ym))}
+    ${row("Missiles that year",`<b>${inYear.length}</b>`,yr)}
     ${noneRow}
     ${dayRow}
     ${conflictRow}
     ${claimRow}
     ${d.overflight?row("Overflight of Japan",esc(d.overflight)):""}
-    ${row("North Korean leader",leaderOf(d.ym))}
   </dl>
   <div class="detnav">
     <button id="dPrev">◀ prev</button><button id="dNext">next ▶</button>
@@ -1842,6 +2386,7 @@ function renderDetail(d){
   const cb=document.getElementById("dCtx");
   if(cb) cb.onclick=()=>{geoScopeEl.checked=true;showTab("ctx");renderGeo();};
   document.querySelectorAll(".ev").forEach(e=>e.classList.toggle("sel",+e.dataset.i===d.i));
+  document.querySelectorAll(".lrow").forEach(e=>e.classList.toggle("sel",+e.dataset.i===d.i));
 }
 // ---------- geopolitical events ----------
 const geoCatsEl=document.getElementById("geoCats"), geoListEl=document.getElementById("geoList"),
@@ -1849,8 +2394,7 @@ const geoCatsEl=document.getElementById("geoCats"), geoListEl=document.getElemen
 const GEOON=new Set(Object.keys(CTXCAT));
 geoCatsEl.insertAdjacentHTML("afterbegin",Object.keys(CTXCAT).map(c=>
   `<button type="button" data-cat="${c}" aria-pressed="true" style="--cc:${CTXCAT[c][1]};--ct:${CTXCAT[c][2]}">`
-  +`<svg width="8" height="8" viewBox="-7 -7 14 14" aria-hidden="true">`
-  +`<path d="${ctxGlyph(c,46)}"/></svg>${TCAT(c)}</button>`).join(""));
+  +`${ctxIconSvg(c,13)}${TCAT(c)}</button>`).join(""));
 geoCatsEl.onclick=e=>{const b=e.target.closest("button[data-cat]");if(!b)return;
   const c=b.dataset.cat, on=b.getAttribute("aria-pressed")==="true";
   if(on)GEOON.delete(c);else GEOON.add(c);
@@ -1879,13 +2423,15 @@ function renderGeo(){
       let host=""; try{host=u?new URL(u).hostname.replace(/^www\./,""):"";}catch(e){}
       return `<div class="geo-it" style="--cc:${co}"><span class="gd" title="${esc(nm)}">${cxDate(k)}</span>`
         +`<span class="gt">${u?`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(l)}</a>`:esc(l)}`
-        +(u?` <span class="host">${esc(host)}${n?` · ${esc(n)}`:""} ↗</span>`:` <span class="host">— ${T("geo.nolink","no verified source yet")}</span>`)
+        +(u?` <span class="host">${esc(host)}${n?` · ${esc(n)}`:""} ↗</span>`:"")
         +`</span></div>`;}).join("")).join("")
-    +`<p class="disc" style="margin-top:16px"><b>How this list is built</b> These events are compiled editorially from the public record to place each launch in its month. They are not part of the launch dataset, and their selection has not yet been governed by a written inclusion rule — a candidate pool drawn from the Ministry of Unification chronology, CRS and CSIS is being classified for that purpose. Linked events point to an official or institutional source, in English where one exists. Events without a link have none verified yet.</p>`;
+    +`<p class="disc geo-note">${T("geo.how","These are geopolitical events related to North Korea's missile launches, listed by year. They are compiled from public sources such as government ministries, official press releases and published reports. Events with a link point to a credible source for that event; events without a link are still under internal review. The list is updated monthly.")}</p>`;
 }
 function openDetail(d){
   if(d && d.ym!==months[cur]){stop(); setMonth(mIndex.get(d.ym));}
-  showTab("detail"); renderDetail(d);
+  renderDetail(d);
+  if(mainTab==="ctx"){ showTab("detail"); return; }   // main panel and side panel always belong together
+  openDrawer("detail");
 }
 
 // ---------- data explorer ----------
@@ -1901,7 +2447,7 @@ function fillRegimes(){
   const sel=document.getElementById("fRg"); if(!sel) return;
   const cur=sel.value;
   sel.innerHTML=opt("","Any",cur==="")+REGIMES.map(([cc,lab,get])=>
-    `<optgroup label="${TC(lab)}">`+get().map((row,i)=>opt(`${cc}:${i}`,TP(row[1]),cur===`${cc}:${i}`)).join("")+`</optgroup>`).join("");
+    `<optgroup label="${TC(lab)}">`+get().map((row,i)=>opt(`${cc}:${i}`,TPK(row[1]),cur===`${cc}:${i}`)).join("")+`</optgroup>`).join("");
 }
 const COLS=[["date_kst","col.date","Date",d=>d.date_kst],["time_kst","col.time","Time",d=>d.time_kst||"—"],
  ["missile","col.mis","Missile",d=>esc(misName(d.missile)),"nm"],
@@ -1927,10 +2473,10 @@ function fillSelects(){
   y2.innerHTML=YRS.map(y=>opt(y,y,y===YRS[YRS.length-1])).join("");
   EXPSEL.y1=YRS[0]; EXPSEL.y2=YRS[YRS.length-1];
   const uniq=(k)=>[...new Set(L.map(d=>d[k]).filter(v=>v!=null&&v!==""))].sort();
-  document.getElementById("fCls").innerHTML=opt("","Any")+uniq("cls").map(v=>opt(v,v==="Unknown"?"not published":v)).join("");
-  document.getElementById("fMis").innerHTML=opt("","Any")+uniq("missile").map(v=>opt(v,misName(v))).join("");
-  document.getElementById("fFac").innerHTML=opt("","Any")+uniq("facility").map(v=>opt(v,facName(v))).join("");
-  document.getElementById("fSea").innerHTML=opt("","Any")+uniq("landing_sea").map(v=>opt(v,SEANAME[v]||v)).join("");
+  document.getElementById("fCls").innerHTML=opt("",T("exp.any","Any"))+uniq("cls").map(v=>opt(v,v==="Unknown"?T("log.nopub","not published"):v)).join("");
+  document.getElementById("fMis").innerHTML=opt("",T("exp.any","Any"))+uniq("missile").map(v=>opt(v,misName(v))).join("");
+  document.getElementById("fFac").innerHTML=opt("",T("exp.any","Any"))+uniq("facility").map(v=>opt(v,facName(v))).join("");
+  document.getElementById("fSea").innerHTML=opt("",T("exp.any","Any"))+uniq("landing_sea").map(v=>opt(v,TSEA(v))).join("");
 }
 function filtered(){
   const f=EXPSEL;
@@ -1995,10 +2541,23 @@ function bindExp(){
 }
 fillSelects(); bindExp(); drawTable();
 
-drawTL();setMonth(cur);renderDetail(null);renderGeo();
+drawTL();setMonth(cur);renderGeo();
 let lang0="en"; try{lang0=localStorage.getItem("nkm-lang")||"en";}catch(e){}
 applyLang(["en","ko","ja"].includes(lang0)?lang0:"en");
-const tw=document.querySelector(".tlwrap");tw.scrollLeft=tw.scrollWidth;
+const tw=document.querySelector(".tlwrap");
+{ const n24=months.filter(k=>k>="2024-01").length; if(n24>0) setTZ(months.length/n24,1); }  // open on 2024 to now, month by month
+tw.scrollLeft=tw.scrollWidth; tlTicks();
+addEventListener("resize",()=>{tlTicks();});
+{ const lat=L.filter(inScope).sort(byTimeAsc).pop(); if(lat) openDetail(lat); else openDrawer("month");
+  if(!matchMedia("(min-width:1200px)").matches) closeDrawer(); }
+// First visit: the newest launch is shown first; then, unless the visitor does anything, the story plays
+// on from January 1998 (and loops) until they press Pause or interact.
+{ let acted=false; const mark=()=>{acted=true;};
+  ["pointerdown","keydown","wheel","touchstart"].forEach(ev=>addEventListener(ev,mark,{once:true,capture:true,passive:true}));
+  if(!matchMedia("(prefers-reduced-motion: reduce)").matches)
+    setTimeout(()=>{ if(acted||playing||gran!=="month") return;
+      autoLoop=true; playing=true; document.getElementById("play").textContent="Pause";
+      setMonth(0); timer=setTimeout(step,500); },5500); }
 document.getElementById("tzIn").onclick=()=>setTZ(TZ*1.6);
 document.getElementById("tzOut").onclick=()=>setTZ(TZ/1.6);
 document.getElementById("tzRst").onclick=()=>setTZ(1);
@@ -2012,6 +2571,61 @@ tlWrap.addEventListener("wheel",e=>{
   if(Math.abs(e.deltaX)>Math.abs(e.deltaY)) return;   // trackpad swipe: let it through
   if(TZ>1){e.preventDefault();tlWrap.scrollLeft+=e.deltaY;}
 },{passive:false});
+
+
+/* ===== L10N: natural Korean / Japanese for the data-driven text in the side panels ===== */
+(function(){
+const XD={"not published": ["미공개", "非公表"], "single missile": ["미사일 1발", "1発のみ"], "fired together, same minute": ["같은 분(分)에 함께 발사", "同じ分に同時発射"], "year-month-day, Japan/Korea time": ["연-월-일, 한국·일본 시간 기준", "年-月-日（日本・韓国時間）"], "JST / KST (UTC+9)": ["JST / KST (UTC+9)", "JST / KST（UTC+9）"], "North Korean designation first, other designations in brackets": ["북한식 명칭을 먼저, 그 밖의 명칭은 괄호 안에 표기", "北朝鮮での呼称を先に、その他の呼称は括弧内に表記"], "string as recorded in the CNS database": ["CNS 데이터베이스에 기록된 원문 표기", "CNSデータベースに記録されている原文表記"], "how far it flew, ground range": ["비행 거리(지상 사거리)", "飛行距離（地上射程）"], "apogee, the top of the arc": ["최고 고도(탄도의 정점)", "最高高度（弾道の頂点）"], "compass bearing from the launch site (90° = due east)": ["발사 지점 기준 방위각 (90° = 정동쪽)", "発射地点からの方位角（90°＝真東）"], "great-circle projection from site, bearing and range": ["발사 지점·방위·사거리로 계산한 대권 투영", "発射地点・方位・射程から算出した大圏投影"], "not reconstructed": ["재구성 불가", "再構成不可"], "Landing point unknown": ["낙하 지점 불명", "落下地点不明"], "no landing point published": ["낙하 지점 미공개", "落下地点は非公表"], "Inside Japan's EEZ": ["일본 EEZ 안", "日本のEEZ内"], "Outside Japan's EEZ": ["일본 EEZ 밖", "日本のEEZ外"], "estimate — reconstructed point tested against the Marine Regions boundary, not an official verdict": ["추정 — 재구성한 지점을 Marine Regions 경계와 대조한 결과이며 공식 판정이 아님", "推定 — 再構成した地点をMarine Regionsの境界と照合したもので、公式の判定ではない"], "tied to a specific MOD release that lists this launch time": ["이 발사 시각이 적힌 일본 방위성 개별 발표와 연결됨", "この発射時刻を記載した防衛省の個別発表と対応"], "tied to a MOD statement; this was the only missile recorded that day": ["방위성 발표와 연결됨. 이날 기록된 미사일은 이 1발뿐", "防衛省の発表と対応。この日記録されたミサイルはこの1発のみ"], "tied to a MOD statement whose stated count equals the number of missiles that day": ["그날 기록된 미사일 수와 같은 수치를 밝힌 방위성 발표와 연결됨", "その日に記録されたミサイル数と同数を示した防衛省の発表と対応"], "recorded as a disagreement, not settled here": ["이견이 있다는 사실만 기록하며, 어느 쪽이 맞는지는 판단하지 않음", "見解の相違として記録するにとどめ、どちらが正しいかは判断しない"], "neither reading is treated as the correct one here": ["어느 쪽 해석도 정답으로 취급하지 않음", "どちらの解釈も正解としては扱わない"], "published ranges are rounded, bearings are whole degrees, and the launch point is the site centroid": ["발표된 사거리는 반올림 값이고, 방위는 정수 단위이며, 발사 지점은 시설의 중심 좌표임", "公表された射程は丸められた値で、方位は整数度、発射地点は施設の中心座標だ"], "MOD verdicts are applied only where a statement can be tied to this missile": ["방위성 판정은 발표를 해당 미사일과 연결할 수 있는 경우에만 적용함", "防衛省の判定は、発表を当該ミサイルと結び付けられる場合にのみ適用する"], "a day-level statement that does not identify individual missiles": ["개별 미사일을 특정하지 않은 일 단위 발표", "個々のミサイルを特定しない日単位の発表"], "the statement this verdict is taken from": ["이 판정의 근거가 된 발표", "この判定の根拠となった発表"], "MOD gave no EEZ verdict for this missile (no arrival in Japan's territory or EEZ confirmed)": ["방위성은 이 미사일에 대해 EEZ 판정을 내리지 않았음 (일본 영토·EEZ 도달이 확인되지 않음)", "防衛省はこのミサイルについてEEZの判定を示していない（日本の領域・EEZへの到達は確認されず）"], "no MOD statement could be tied to this missile": ["미사일 명칭 출처: CNS 북한 미사일 시험 데이터베이스", "ミサイル名の出典：CNS北朝鮮ミサイル実験データベース"], "MOD Defense White Paper states this count for this day, and it equals the number of missiles recorded": ["방위백서가 이날 이 수치를 밝혔고, 기록된 미사일 수와 일치함", "防衛白書がこの日についてこの数を示しており、記録されたミサイル数と一致"], "only missile recorded on this day": ["이날 기록된 유일한 미사일", "この日に記録された唯一のミサイル"], "MOD release lists this launch time": ["방위성 발표에 이 발사 시각이 적혀 있음", "防衛省の発表にこの発射時刻が記載"], "Defense White Paper": ["방위백서", "防衛白書"], "supplement": ["보충", "補足"], "Not yet in the CNS database. Taken from the Japan MOD release of 12 Oct 2026 and the South Korean JCS as reported by AP and SBS: time, range and apogee as announced; the exact launch point and bearing were not published.": ["아직 CNS 데이터베이스에 없는 기록임. 2026년 10월 12일 일본 방위성 발표와, AP·SBS가 전한 남한 합참 발표를 토대로 했으며, 시각·사거리·최고 고도는 발표된 수치임. 정확한 발사 지점과 방위각은 공개되지 않았음.", "CNSデータベースにはまだない記録だ。2026年10月12日の防衛省発表と、AP・SBSが伝えた韓国合同参謀本部の発表に基づき、時刻・射程・最高高度は発表どおりだ。正確な発射地点と方位は公表されていない。"], "Japan's MOD Defense White Paper states that 1 of the 2 missiles recorded on this day fell inside Japan's EEZ. The source does not say which, so no individual missile here carries that verdict.": ["일본 방위백서는 이날 기록된 미사일 2발 중 1발이 일본 EEZ 안에 떨어졌다고 밝혔음. 어느 쪽인지는 명시돼 있지 않아, 개별 미사일에는 이 판정을 붙이지 않았음.", "防衛白書は、この日記録されたミサイル2発のうち1発が日本のEEZ内に落下したとしている。どちらかは明記されていないため、個々のミサイルにはこの判定を付していない。"], "Japan's MOD Defense White Paper states that 3 of the 5 missiles recorded on this day fell inside Japan's EEZ. The source does not say which, so no individual missile here carries that verdict.": ["일본 방위백서는 이날 기록된 미사일 5발 중 3발이 일본 EEZ 안에 떨어졌다고 밝혔음. 어느 쪽인지는 명시돼 있지 않아, 개별 미사일에는 이 판정을 붙이지 않았음.", "防衛白書は、この日記録されたミサイル5発のうち3発が日本のEEZ内に落下したとしている。どれかは明記されていないため、個々のミサイルにはこの判定を付していない。"], "Taepodong-1 (declared satellite launch) passed over Tohoku": ["대포동 1호(위성 발사 주장)가 도호쿠 상공을 통과", "テポドン1号（衛星打ち上げと主張）が東北上空を通過"], "Unha-2 (declared satellite launch) passed over Tohoku": ["은하 2호(위성 발사 주장)가 도호쿠 상공을 통과", "銀河2号（衛星打ち上げと主張）が東北上空を通過"], "Unha-3 (declared satellite launch) passed over Okinawa": ["은하 3호(위성 발사 주장)가 오키나와 상공을 통과", "銀河3号（衛星打ち上げと主張）が沖縄上空を通過"], "Hwasong-12 passed over Oshima Peninsula, Hokkaido": ["화성-12형이 홋카이도 오시마반도 상공을 통과", "火星12型が北海道の渡島半島上空を通過"], "Hwasong-12 passed over Cape Erimo, Hokkaido": ["화성-12형이 홋카이도 에리모곶 상공을 통과", "火星12型が北海道の襟裳岬上空を通過"], "IRBM passed over Aomori Prefecture": ["중거리탄도미사일이 아오모리현 상공을 통과", "IRBMが青森県上空を通過"], "Chollima-1 (declared satellite launch) passed between Okinawa Main Is. and Miyako": ["천리마-1형(위성 발사 주장)이 오키나와 본섬과 미야코섬 사이를 통과", "千里馬1型（衛星打ち上げと主張）が沖縄本島と宮古島の間を通過"], "Japan's MOD states this launch passed over Japanese territory": ["일본 방위성은 이 발사체가 일본 영토 상공을 통과했다고 밝혔음", "防衛省はこの発射体が日本の領域上空を通過したと発表"], "A peaceful satellite launch, exercising what North Korea calls its sovereign right to use space.": ["평화적 목적의 위성 발사로, 북한이 우주 이용의 주권적 권리라고 부르는 것을 행사한 것이라고 주장함.", "平和目的の衛星打ち上げであり、北朝鮮が「宇宙利用の主権的権利」と呼ぶものの行使だと主張している。"], "A test of ballistic-missile technology. UN Security Council resolutions prohibit any launch by North Korea using ballistic-missile technology, whether or not a satellite is the payload.": ["탄도미사일 기술의 시험임. 안보리 결의는 위성 탑재 여부와 관계없이 북한이 탄도미사일 기술을 사용해 발사하는 것을 모두 금지하고 있음.", "弾道ミサイル技術の試験だ。国連安保理決議は、衛星を搭載しているか否かにかかわらず、北朝鮮による弾道ミサイル技術を用いた発射を禁じている。"], "Both accounts agree on the hardware: a satellite launch vehicle and a ballistic missile share stages, engines and guidance. The disagreement is over purpose and legality, not over what flew.": ["두 주장 모두 발사체 자체에는 이견이 없음. 위성 발사체와 탄도미사일은 추진단, 엔진, 유도 장치를 공유함. 쟁점은 무엇이 날았는지가 아니라 목적과 합법성임.", "両者とも機体そのものについては一致している。衛星運搬ロケットと弾道ミサイルは、段、エンジン、誘導装置を共有するためだ。争点は何が飛んだかではなく、目的と合法性だ。"], "North Korea announced on 4 September 1998 that it had placed the satellite Kwangmyongsong-1 in orbit with the carrier rocket Paektusan-1.": ["북한은 1998년 9월 4일, 운반로켓 백두산 1호로 인공위성 광명성 1호를 궤도에 올렸다고 발표했음.", "北朝鮮は1998年9月4日、運搬ロケット「白頭山1号」で人工衛星「光明星1号」を軌道に乗せたと発表した。"], "Japan, South Korea and the United States treated the launch as a Taepodong-1 ballistic-missile test. U.S. Space Command concluded that no satellite reached orbit.": ["일본, 남한, 미국은 이 발사를 대포동 1호 탄도미사일 시험으로 보았음. 미국 우주사령부는 위성이 궤도에 오르지 못했다고 결론 내렸음.", "日本、韓国、米国はこの発射をテポドン1号の弾道ミサイル試験として扱った。米宇宙軍は、衛星は軌道に到達しなかったと結論づけている。"], "KBS News archive report (Korean)": ["KBS 뉴스 아카이브 보도 (한국어)", "KBSニュースのアーカイブ報道（韓国語）"], "Japan MFA statement, 1 September 1998": ["일본 외무성 성명, 1998년 9월 1일", "日本外務省の声明（1998年9月1日）"], "Japan MOD, North Korea's ballistic missile launches": ["일본 방위성, 북한의 탄도미사일 발사", "防衛省「北朝鮮による弾道ミサイル発射」"], "Hankyoreh report on the Rodong Sinmun account (Korean)": ["노동신문 보도 내용을 전한 한겨레 기사 (한국어)", "労働新聞の報道内容を伝えるハンギョレ記事（韓国語）"], "North Korea called this a training launch of an intermediate-range strategic missile carrying a hypersonic warhead, observed by Kim Jong Un. Rodong Sinmun stated the missile was fired north-east and hit a set target point 1,000 km away in the East Sea at 43°36′28.04″N, 138°00′47.02″E. Kim Yo Jong said the same day that South Korean and Japanese forces had failed to track it.": ["북한은 이번 발사를 극초음속 탄두를 장착한 중거리 전략미사일의 훈련 발사라고 밝혔고, 김정은이 참관했다고 했음. 노동신문은 미사일이 북동쪽으로 발사돼 1,000km 떨어진 동해상 목표 지점(북위 43°36′28.04″, 동경 138°00′47.02″)에 명중했다고 보도했음. 김여정은 같은 날 남한과 일본군이 이를 탐지하지 못했다고 주장했음.", "北朝鮮は今回の発射を、極超音速弾頭を搭載した中距離戦略ミサイルの訓練発射だとし、金正恩氏が視察したと発表した。労働新聞は、ミサイルが北東方向に発射され、1,000km先の東海（日本海）上の目標点（北緯43°36′28.04″、東経138°00′47.02″）に命中したと報じた。金与正氏は同日、韓国軍と日本軍は追跡に失敗したと主張した。"], "South Korea's Joint Chiefs of Staff tracked a flight of more than 700 km. Japan's MOD recorded about 680 km with an apogee of about 90 km and did not confirm a hypersonic glide profile. The figures on this page are the Japanese and South Korean ones, not the North Korean claim.": ["남한 합참은 700km 이상의 비행을 포착했음. 일본 방위성은 약 680km, 최고 고도 약 90km로 기록했고 극초음속 활공 비행은 확인하지 않았음. 이 페이지의 수치는 북한의 주장이 아니라 일본과 남한이 발표한 값임.", "韓国合同参謀本部は700km超の飛行を探知した。防衛省は約680km、最高高度約90kmと記録し、極超音速滑空の軌道は確認していない。このページの数値は北朝鮮の主張ではなく、日本と韓国が発表したものだ。"], "The accounts differ on range (1,000 km claimed against 700+ km tracked) and on whether the warhead performed a hypersonic glide. No independent confirmation of the stated impact point exists.": ["사거리(주장 1,000km 대 포착 700km 이상)와 탄두의 극초음속 활공 여부에서 주장이 엇갈림. 북한이 밝힌 탄착 지점을 독립적으로 확인한 자료는 없음.", "射程（北朝鮮の主張は1,000km、探知は700km超）と、弾頭が極超音速滑空を行ったかどうかで主張が食い違っている。発表された着弾点を独立に確認できる情報はない。"], "Pick a launch: click a row in the list, a marker on the map, or a row in the table below.": ["발사 기록 선택: 목록의 행, 지도의 표시, 아래 표의 행 클릭.", "発射を選択: リストの行、地図上のマーカー、下の表の行をクリック。"], "◀ prev": ["◀ 이전", "◀ 前へ"], "next ▶": ["다음 ▶", "次へ ▶"], "Zoom to impact": ["낙하 지점 확대", "着弾点へズーム"], "Unknown": ["미상", "不明"], "The source does not say which system was fired.": ["미공개", "非公表"], "Missiles, inside Japan's EEZ": ["일본 EEZ 안에 떨어진 미사일", "日本のEEZ内に落下したミサイル"], "Missiles, outside": ["일본 EEZ 밖에 떨어진 미사일", "EEZ外に落下したミサイル"], "Landing point not published": ["낙하 지점 미공개", "落下地点は非公表"], "Launch occasions": ["발사 횟수", "発射回数"], "launch occasions": ["회 발사", "回の発射"], "days with a launch": ["발사가 있었던 날", "発射があった日数"], "missiles per occasion, average": ["1회당 평균 미사일 수", "1回あたりの平均ミサイル数"], "landed inside Japan's EEZ": ["일본 EEZ 안에 낙하", "日本のEEZ内に落下"], "launch sites used": ["사용된 발사 장소", "使用された発射地点"], "Missiles by type": ["유형별 미사일", "種類別のミサイル"], "Missile": ["미사일", "ミサイル"], "By launch site": ["발사 장소별", "発射地点別"], "Site": ["장소", "地点"], "Japan": ["일본", "日本"], "Inter-Korean": ["남북 관계", "南北関係"], "United States": ["미국", "米国"], "Russia–DPRK": ["러시아·북한", "ロシア・北朝鮮"], "UN Security Council": ["유엔 안보리", "国連安保理"], "Nuclear test": ["핵실험", "核実験"], "Japanese": ["일본어", "日本語"], "Korean": ["한국어", "韓国語"], "UN News": ["유엔 뉴스", "国連ニュース"], "North Korea: Paektusan-1 (백두산 1호). Pyongyang announced the August 1998 launch as placing the Kwangmyongsong-1 satellite in orbit. Taepodong is a US designation taken from the village of Taepo-dong.": ["북한 명칭은 백두산 1호임. 평양은 1998년 8월 발사를 광명성 1호 위성의 궤도 진입이라고 발표했음. 대포동은 대포동 마을에서 따온 미국 쪽 명칭임.", "北朝鮮での呼称は「白頭山1号」。平壌は1998年8月の発射を、衛星「光明星1号」の軌道投入と発表した。テポドンは、大浦洞（テポドン）という村にちなんだ米国側の呼称だ。"], "North Korea: Hwasong-7 (화성 7형). Nodong / Rodong-1 is a US designation taken from the village of Nodong.": ["북한 명칭은 화성-7형임. 노동(Nodong/Rodong-1)은 노동리 마을에서 따온 미국 쪽 명칭임.", "北朝鮮での呼称は「火星7型」。ノドン（Nodong／Rodong-1）は、労働里という村にちなんだ米国側の呼称だ。"], "North Korea: Hwasong-5 (화성 5형). Scud is the NATO reporting name of the Soviet design it is based on.": ["북한 명칭은 화성-5형임. 스커드는 원형인 소련 설계에 붙은 NATO 식별 명칭임.", "北朝鮮での呼称は「火星5型」。スカッドは、原型であるソ連製設計に付けられたNATOの識別名だ。"], "North Korea: Hwasong-6 (화성 6형).": ["북한 명칭은 화성-6형임.", "北朝鮮での呼称は「火星6型」。"], "North Korea: Hwasong-5 family. MaRV = manoeuvrable re-entry vehicle, an assessment by outside analysts, not a North Korean term.": ["북한 명칭은 화성-5형 계열임. MaRV는 기동형 재진입체를 뜻하며, 외부 분석가의 평가일 뿐 북한이 쓰는 용어는 아님.", "北朝鮮での呼称は「火星5型」系列。MaRVは機動式再突入体の略で、外部の分析者による評価であり、北朝鮮の用語ではない。"], "North Korea: Hwasong-6 family. MaRV = manoeuvrable re-entry vehicle, an assessment by outside analysts, not a North Korean term.": ["북한 명칭은 화성-6형 계열임. MaRV는 기동형 재진입체를 뜻하며, 외부 분석가의 평가일 뿐 북한이 쓰는 용어는 아님.", "北朝鮮での呼称は「火星6型」系列。MaRVは機動式再突入体の略で、外部の分析者による評価であり、北朝鮮の用語ではない。"], "North Korea: Hwasong-9 (화성 9형). ER Scud / Scud-ER is an outside designation.": ["북한 명칭은 화성-9형임. 사거리연장 스커드(ER Scud/Scud-ER)는 외부에서 붙인 명칭임.", "北朝鮮での呼称は「火星9型」。ER Scud／Scud-ER（射程延長型スカッド）は外部での呼称だ。"], "North Korea: Hwasong-10 (화성 10형). Musudan is a US designation taken from Musudan-ri, the launch site.": ["북한 명칭은 화성-10형임. 무수단은 발사 장소인 무수단리에서 따온 미국 쪽 명칭임.", "北朝鮮での呼称は「火星10型」。ムスダンは、発射地点の舞水端里にちなんだ米国側の呼称だ。"], "North Korea: Unha (은하), presented as a satellite launch vehicle. Taepodong-2 is the US designation for the same family.": ["북한 명칭은 은하이며, 위성 운반로켓이라고 주장함. 대포동 2호는 같은 계열에 대한 미국 쪽 명칭임.", "北朝鮮での呼称は「銀河」で、衛星運搬ロケットと主張している。テポドン2号は同系統に対する米国側の呼称だ。"], "North Korea: Unha-3 (은하 3호), presented as a satellite launch vehicle carrying Kwangmyongsong-3. Taepodong-2 is the US designation for the same family.": ["북한 명칭은 은하 3호이며, 광명성 3호를 실은 위성 운반로켓이라고 주장함. 대포동 2호는 같은 계열에 대한 미국 쪽 명칭임.", "北朝鮮での呼称は「銀河3号」で、「光明星3号」を搭載した衛星運搬ロケットと主張している。テポドン2号は同系統に対する米国側の呼称だ。"], "North Korea: Pukguksong-1 (북극성 1형). KN-11 is a US designation.": ["북한 명칭은 북극성-1형임. KN-11은 미국 쪽 명칭임.", "北朝鮮での呼称は「北極星1型」。KN-11は米国側の呼称だ。"], "North Korea: Pukguksong-2 (북극성 2형). KN-15 is a US designation.": ["북한 명칭은 북극성-2형임. KN-15는 미국 쪽 명칭임.", "北朝鮮での呼称は「北極星2型」。KN-15は米国側の呼称だ。"], "North Korea: Pukguksong-3 (북극성 3형). KN-26 is a US designation.": ["북한 명칭은 북극성-3형임. KN-26은 미국 쪽 명칭임.", "北朝鮮での呼称は「北極星3型」。KN-26は米国側の呼称だ。"], "North Korea calls it a super-large-calibre multiple rocket launcher (초대형방사포), 600 mm. KN-25 is a US designation. Japan and South Korea have treated some of these firings as ballistic missiles.": ["· 북한 측 명칭: 초대형 방사포 (600mm)\n· 미국 측 명칭: KN-25\n· 일본·남한: 이 가운데 일부 발사를 탄도미사일로 취급", "・北朝鮮側の呼称：超大型放射砲（600mm）\n・米国側の呼称：KN-25\n・日本・韓国：このうち一部の発射を弾道ミサイルとして扱ってきた"], "KN-02 is a US designation, sometimes rendered Toksa by outside analysts. No North Korean designation for this system is established in open sources.": ["KN-02는 미국 쪽 명칭이며, 외부 분석가들은 '독사'라고 부르기도 함. 공개 자료에서는 이 체계의 북한 명칭이 확인되지 않음.", "KN-02は米国側の呼称で、外部の分析者は「トクサ（毒蛇）」と呼ぶこともある。公開情報では、この兵器の北朝鮮での呼称は確認されていない。"], "A placeholder used by the CNS database. No North Korean designation is recorded for this entry.": ["CNS 데이터베이스가 임시로 쓰는 표기임. 이 항목에는 북한 명칭이 기록돼 있지 않음.", "CNSデータベースが仮に用いている表記だ。この項目には北朝鮮での呼称が記録されていない。"], "North Korea: Hwasong-12 (화성 12형). KN-17 is a US designation for the same system.": ["북한 명칭은 화성-12형임. KN-17은 같은 체계에 대한 미국 쪽 명칭임.", "北朝鮮での呼称は「火星12型」。KN-17は同じ兵器に対する米国側の呼称だ。"], "North Korea: Hwasong-14 (화성 14형). KN-20 is a US designation.": ["북한 명칭은 화성-14형임. KN-20은 미국 쪽 명칭임.", "北朝鮮での呼称は「火星14型」。KN-20は米国側の呼称だ。"], "North Korea: Hwasong-15 (화성 15형). KN-22 is a US designation.": ["북한 명칭은 화성-15형임. KN-22는 미국 쪽 명칭임.", "北朝鮮での呼称は「火星15型」。KN-22は米国側の呼称だ。"], "North Korea: Hwasong-11A (화성 11가). KN-23 is a US designation; South Korea has also described it as a Scud-type short-range ballistic missile with a depressed trajectory.": ["북한 명칭은 화성-11가임. KN-23은 미국 쪽 명칭이며, 남한은 저고도 활강 궤적의 스커드형 단거리 탄도미사일로 설명하기도 했음.", "北朝鮮での呼称は「火星11ガ」。KN-23は米国側の呼称で、韓国は低高度で滑空する軌道のスカッド型短距離弾道ミサイルとも説明してきた。"], "North Korea: Hwasong-11B (화성 11나). KN-24 is a US designation.": ["북한 명칭은 화성-11나임. KN-24는 미국 쪽 명칭임.", "北朝鮮での呼称は「火星11ナ」。KN-24は米国側の呼称だ。"], "North Korea: Chollima-1 (천리마 1형), presented as a satellite launch vehicle carrying Malligyong-1.": ["북한 명칭은 천리마-1형이며, 만리경-1호를 실은 위성 운반로켓이라고 주장함.", "北朝鮮での呼称は「千里馬1型」で、「万里鏡1号」を搭載した衛星運搬ロケットと主張している。"], "Japan's Ministry of Defense reports at least two North Korean ballistic missiles, the second on a possibly manoeuvring trajectory, and protests to Pyongyang through diplomatic channels; the vice-minister briefs the press the same day": ["일본 방위성이 최소 2발의 북한 탄도미사일(2발째는 변칙 기동 궤적 가능성)을 확인했다고 발표하고 외교 경로로 평양에 항의했다. 부대신이 당일 기자회견을 열었다", "防衛省が北朝鮮の弾道ミサイル少なくとも2発（2発目は変則軌道の可能性）を確認したと発表し、外交ルートで北朝鮮に抗議。防衛副大臣が同日、記者会見を行った"], "South Korea's Joint Chiefs report several ballistic missiles from the Pyongyang area and the National Security Office calls on North Korea to stop; the military reads the launch as a response to the South's hypersonic test": ["남한 합참이 평양 일대에서 탄도미사일 여러 발이 발사됐다고 밝히고, 국가안보실이 북한에 중단을 촉구했다. 군은 이번 발사를 남한의 극초음속 시험에 대한 대응으로 보고 있다", "韓国合同参謀本部が平壌付近から弾道ミサイル数発が発射されたと発表し、国家安保室が北朝鮮に中止を求めた。軍は今回の発射を韓国の極超音速試験への対抗措置とみている"], "South Korea flight-tests its first domestically developed hypersonic glide vehicle, from a sea barge at the Agency for Defense Development's Anheung range, with President Lee Jae-myung present; the presidential office released images on 11 October": ["남한이 국산 극초음속 활공체(HGV)를 처음으로 시험 발사했다. 해상 바지선에서 국방과학연구소 안흥시험장 인근으로 쐈으며 이재명 대통령이 참관했고, 대통령실이 10월 11일 영상을 공개했다", "韓国が初の国産極超音速滑空体を試験発射。国防科学研究所（ADD）安興試験場の海上バージから発射され、李在明大統領が立ち会い、大統領室が10月11日に映像を公開した"], "First nuclear test": ["제1차 핵실험", "第1回核実験"], "Second nuclear test": ["제2차 핵실험", "第2回核実験"], "Third nuclear test": ["제3차 핵실험", "第3回核実験"], "Fourth nuclear test, claimed as a hydrogen bomb": ["제4차 핵실험, 북한은 수소폭탄이라고 주장", "第4回核実験、北朝鮮は水爆と主張"], "Fifth nuclear test": ["제5차 핵실험", "第5回核実験"], "Sixth nuclear test, the largest to date": ["제6차 핵실험, 지금까지 최대 규모", "第6回核実験、これまでで最大規模"], "UNSCR 1695 condemns the July missile launches": ["안보리 결의 1695호, 7월 미사일 발사 규탄", "国連安保理決議1695号、7月のミサイル発射を非難"], "UNSCR 1718, first sanctions regime": ["안보리 결의 1718호, 첫 제재 체제", "安保理決議1718号、初の制裁体制"], "UNSCR 1874 widens the arms embargo": ["안보리 결의 1874호, 무기 금수 확대", "安保理決議1874号、武器禁輸を拡大"], "UNSCR 2087": ["안보리 결의 2087호", "安保理決議2087号"], "UNSCR 2094": ["안보리 결의 2094호", "安保理決議2094号"], "UNSCR 2270, sectoral sanctions begin": ["안보리 결의 2270호, 부문별 제재 시작", "安保理決議2270号、分野別制裁が始まる"], "UNSCR 2321 caps coal exports": ["안보리 결의 2321호, 석탄 수출 상한 설정", "安保理決議2321号、石炭輸出に上限"], "UNSCR 2356": ["안보리 결의 2356호", "安保理決議2356号"], "China and Russia veto a new UN sanctions resolution": ["중국·러시아, 새 유엔 대북 제재 결의안 거부권 행사", "中国とロシア、国連の新たな対北朝鮮制裁決議案に拒否権"], "UNSCR 2371 bans coal, iron and seafood exports": ["안보리 결의 2371호, 석탄·철·수산물 수출 금지", "安保理決議2371号、石炭・鉄・水産物の輸出を禁止"], "UNSCR 2375 caps refined petroleum": ["안보리 결의 2375호, 정제유 공급 상한 설정", "安保理決議2375号、精製石油製品の供給に上限"], "UNSCR 2397 tightens the petroleum cap": ["안보리 결의 2397호, 석유 상한 추가 강화", "安保理決議2397号、石油の上限をさらに強化"], "Mount Kumgang tours open to South Koreans": ["금강산 관광, 남한 주민에게 개방", "金剛山観光が韓国国民に開始"], "First Battle of Yeonpyeong": ["제1차 연평해전", "第1次延坪海戦"], "First inter-Korean summit, June 15 Declaration": ["제1차 남북 정상회담, 6·15 공동선언", "初の南北首脳会談、6.15共同宣言"], "Second Battle of Yeonpyeong": ["제2차 연평해전", "第2次延坪海戦"], "Kaesong Industrial Complex groundbreaking": ["개성공단 착공", "開城工業団地が着工"], "Both sides agree to halt propaganda broadcasts along the MDL": ["쌍방, 군사분계선 일대 선전방송 중단 합의", "双方が軍事境界線一帯での宣伝放送の中止で合意"], "Second inter-Korean summit": ["제2차 남북 정상회담", "第2回南北首脳会談"], "South Korean tourist shot dead at Mount Kumgang; tours suspended": ["금강산에서 남한 관광객 피격 사망, 관광 중단", "金剛山で韓国人観光客が射殺され、観光が中断"], "Battle of Daecheong": ["대청해전", "大青海戦"], "ROKS Cheonan sunk, 46 sailors killed": ["초계함 천안함 침몰, 장병 46명 사망", "哨戒艦「天安」沈没、乗組員46人が死亡"], "Seoul's May 24 measures cut inter-Korean trade": ["남한의 5·24 조치로 남북 교역 축소", "韓国の5.24措置で南北交易が縮小"], "Yeonpyeong Island shelled, four killed": ["연평도 포격, 4명 사망", "延坪島砲撃、4人死亡"], "Kaesong complex suspended; reopened in September": ["개성공단 가동 중단, 9월 재개", "開城工業団地が稼働停止、9月に再開"], "DMZ landmine blast; August 25 inter-Korean agreement": ["DMZ 지뢰 폭발, 8·25 남북 합의", "DMZで地雷爆発、8.25南北合意"], "Kaesong Industrial Complex closed for good": ["개성공단 전면 폐쇄", "開城工業団地が全面閉鎖"], "North Korea joins the Pyeongchang Winter Olympics": ["북한, 평창 동계올림픽 참가", "北朝鮮が平昌冬季五輪に参加"], "Panmunjom Declaration, first Moon-Kim summit": ["판문점 선언, 문재인·김정은 첫 정상회담", "板門店宣言、文在寅・金正恩の初の首脳会談"], "Pyongyang Joint Declaration and the September 19 military agreement": ["평양 공동선언과 9·19 군사합의", "平壌共同宣言と9.19軍事合意"], "Inter-Korean joint liaison office in Kaesong demolished": ["개성 남북공동연락사무소 폭파", "開城の南北共同連絡事務所を爆破"], "Seoul suspends part of the September 19 military agreement; Pyongyang declares it void": ["남한, 9·19 군사합의 일부 효력 정지, 북한은 무효 선언", "韓国が9.19軍事合意の一部効力を停止、北朝鮮は無効を宣言"], "Kim Jong Un abandons unification, declares two hostile states": ["김정은, 통일 포기하고 '적대적 두 국가' 선언", "金正恩が統一路線を放棄し「敵対的な二国家」を宣言"], "Trash-balloon campaign begins; 32 launch occasions follow": ["오물 풍선 살포 시작, 이후 32차례 살포", "ごみ風船の散布が始まり、その後32回に及ぶ"], "South Korea suspends the September 19 agreement in full; loudspeaker broadcasts resume": ["남한, 9·19 군사합의 전면 효력 정지, 대북 확성기 방송 재개", "韓国が9.19軍事合意の効力を全面停止、拡声器放送を再開"], "North Korea blows up the Gyeongui and Donghae road links": ["북한, 경의선·동해선 도로 폭파", "北朝鮮が京義線・東海線の道路を爆破"], "South Korea halts the loudspeaker broadcasts": ["남한, 대북 확성기 방송 중단", "韓国が対北拡声器放送を中止"], "Bush names North Korea part of an \"axis of evil\"": ["부시 대통령, 북한을 '악의 축'으로 지목", "ブッシュ大統領が北朝鮮を「悪の枢軸」と名指し"], "Second nuclear crisis opens; the KEDO reactor project stalls": ["제2차 북핵 위기 발발, KEDO 경수로 사업 지연", "第2次核危機が勃発、KEDO軽水炉事業が停滞"], "Six-Party Talks begin in Beijing": ["베이징에서 6자회담 개막", "北京で六者協議が開幕"], "September 19 Joint Statement at the Six-Party Talks": ["6자회담 9·19 공동성명", "六者協議の9.19共同声明"], "Treasury designates Banco Delta Asia a primary money-laundering concern": ["미 재무부, 방코델타아시아를 돈세탁 우려 대상으로 지정", "米財務省がバンコ・デルタ・アジアを資金洗浄の主要懸念先に指定"], "February 13 agreement on disabling Yongbyon": ["영변 불능화 관련 2·13 합의", "寧辺の無能力化に関する2.13合意"], "Yongbyon cooling tower demolished": ["영변 냉각탑 폭파", "寧辺の冷却塔を爆破"], "Washington removes North Korea from the terrorism list": ["미국, 북한을 테러지원국 명단에서 삭제", "米国が北朝鮮をテロ支援国家指定から解除"], "Leap Day deal, abandoned in April": ["2·29 '윤달 합의', 4월에 파기", "2.29「閏日合意」、4月に破棄"], "\"Fire and fury\" exchange between Trump and Pyongyang": ["트럼프와 평양 간 '화염과 분노' 설전", "トランプ氏と平壌の「炎と怒り」応酬"], "Washington re-lists North Korea as a state sponsor of terrorism": ["미국, 북한을 테러지원국으로 재지정", "米国が北朝鮮をテロ支援国家に再指定"], "Trump-Kim summit in Singapore": ["싱가포르 북미 정상회담", "シンガポールで米朝首脳会談"], "Hanoi summit ends without a deal": ["하노이 정상회담, 합의 없이 종료", "ハノイ首脳会談が合意なく終了"], "Trump and Kim meet at Panmunjom": ["트럼프·김정은, 판문점에서 회동", "トランプ氏と金正恩氏が板門店で会談"], "Eleven states launch the Multilateral Sanctions Monitoring Team": ["11개국, 다국적제재모니터링팀(MSMT) 출범", "11カ国が多国間制裁監視チーム（MSMT）を発足"], "MSMT reports on North Korea's overseas labour program": ["MSMT, 북한의 해외 노동자 파견 실태 보고서 발표", "MSMTが北朝鮮の海外労働者派遣に関する報告書を発表"], "Taepodong-1 overflies Tohoku; Japan suspends progress on the KEDO project": ["대포동 1호가 도호쿠 상공 통과, 일본은 KEDO 사업 진전 보류", "テポドン1号が東北上空を通過、日本はKEDO事業の進展を凍結"], "Koizumi visits Pyongyang; Japan-DPRK Pyongyang Declaration": ["고이즈미 총리 방북, 북일 평양선언", "小泉首相が訪朝、日朝平壌宣言"], "Koizumi's second visit; abductee family members return to Japan": ["고이즈미 총리 2차 방북, 납북 피해자 가족 일본 귀국", "小泉首相が再訪朝、拉致被害者の家族が帰国"], "Japan bars the ferry Mangyongbong-92 and tightens sanctions": ["일본, 만경봉-92호 입항 금지 및 제재 강화", "日本が万景峰92号の入港を禁止し、制裁を強化"], "Japan bans all imports from North Korea": ["일본, 북한산 전면 수입 금지", "日本が北朝鮮からの全面輸入禁止"], "Stockholm agreement to reinvestigate the abductions": ["스톡홀름 합의, 납치 문제 재조사", "ストックホルム合意、拉致問題の再調査"], "Japan tightens unilateral sanctions after the satellite launch": ["위성 발사 후 일본, 독자 제재 강화", "衛星発射を受け、日本が独自制裁を強化"], "J-Alert issued as a Hwasong-12 crosses Hokkaido": ["화성-12형이 홋카이도 상공을 통과, J-얼러트 발령", "火星12型が北海道上空を通過、Jアラート発令"], "Second Hwasong-12 overflight; J-Alert issued again": ["화성-12형 두 번째 상공 통과, J-얼러트 재발령", "火星12型の2度目の上空通過、Jアラートを再発令"], "J-Alert as an IRBM crosses Aomori Prefecture": ["중거리탄도미사일이 아오모리현 상공 통과, J-얼러트 발령", "IRBMが青森県上空を通過、Jアラート発令"], "Kishida says he wants a summit with Kim Jong Un": ["기시다 총리, 김정은과의 정상회담 의욕 표명", "岸田首相が金正恩氏との首脳会談への意欲を表明"], "Kim Yo Jong rejects a Japan summit over the abductions and missiles": ["김여정, 납치·미사일 문제를 들어 일본과의 정상회담 거부", "金与正氏が拉致・ミサイル問題を理由に日本との首脳会談を拒否"], "Putin visits Pyongyang": ["푸틴 대통령 방북", "プーチン大統領が訪朝"], "Kim Jong Il travels by rail to Moscow": ["김정일, 열차로 모스크바 방문", "金正日が列車でモスクワを訪問"], "Kim Jong Il meets Medvedev at Ulan-Ude": ["김정일, 울란우데에서 메드베데프와 회담", "金正日がウランウデでメドベージェフと会談"], "Kim Jong Un meets Putin in Vladivostok": ["김정은, 블라디보스토크에서 푸틴과 회담", "金正恩がウラジオストクでプーチンと会談"], "North Korea recognises Donetsk and Luhansk": ["북한, 도네츠크·루한스크 인민공화국 승인", "北朝鮮がドネツク・ルガンスク人民共和国を承認"], "Shoigu visits Pyongyang for the armistice anniversary": ["쇼이구 국방장관, 정전협정 기념일에 방북", "ショイグ国防相が休戦記念日に訪朝"], "Kim Jong Un meets Putin at the Vostochny cosmodrome": ["김정은, 보스토치니 우주기지에서 푸틴과 회담", "金正恩がボストーチヌイ宇宙基地でプーチンと会談"], "Russia vetoes renewal of the UN Panel of Experts": ["러시아, 유엔 전문가패널 갱신에 거부권 행사", "ロシアが国連専門家パネルの更新に拒否権"], "Putin visits Pyongyang; comprehensive strategic partnership treaty": ["푸틴 대통령 방북, 포괄적 전략적 동반자 관계 조약 체결", "プーチン大統領が訪朝、包括的戦略的パートナーシップ条約を締結"], "Seoul's NIS confirms North Korean troops deploying to Russia": ["국가정보원, 북한군의 러시아 파병 확인", "韓国国家情報院が北朝鮮軍のロシア派兵を確認"], "Pyongyang and Moscow confirm North Korean troops fought in Kursk": ["평양·모스크바, 북한군의 쿠르스크 전투 참전 공식 확인", "平壌とモスクワが北朝鮮軍のクルスク戦闘参加を公式に認める"]};
+const MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const MS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const CLS={SRBM:["단거리 탄도미사일","短距離弾道ミサイル"],MRBM:["준중거리 탄도미사일","準中距離弾道ミサイル"],IRBM:["중거리 탄도미사일","中距離弾道ミサイル"],
+  ICBM:["대륙간 탄도미사일","大陸間弾道ミサイル"],SLBM:["잠수함발사 탄도미사일","潜水艦発射弾道ミサイル"],HGV:["극초음속 활공체","極超音速滑空体"],
+  SLV:["위성 운반로켓","衛星運搬ロケット"],Unknown:["미분류","未分類"]};
+const idx=()=>LANG==="ko"?0:1;
+const ko=()=>LANG==="ko";
+function tr(t){
+  const i=idx(); let m;
+  if(XD[t]) return XD[t][i];
+  if(/ ↗$/.test(t)){ const c=tr(t.slice(0,-2)); return c===t.slice(0,-2)?t:c+" ↗"; }
+  if(m=t.match(/^(SRBM|MRBM|IRBM|ICBM|SLBM|HGV|SLV|Unknown) — (.+?)(?: · launch (\d+) of (\d+) in this salvo)?$/))
+    return m[1]+" — "+CLS[m[1]][i]+(m[3]?(ko()?` · 한 번에 발사된 미사일 중 ${m[3]}/${m[4]}번째`:` · 同時発射のうち${m[3]}/${m[4]}発目`):"");
+  if(m=t.match(/^class not published · launch (\d+) of (\d+) in this salvo$/))
+    return ko()?`분류 미공개 · 한 번에 발사된 미사일 중 ${m[1]}/${m[2]}번째`:`分類は非公表 · 同時発射のうち${m[1]}/${m[2]}発目`;
+  if(m=t.match(/^(\d+) \/ (\d+) this month$/)) return (ko()?"이번 달 ":"今月 ")+m[1]+" / "+m[2];
+  if(m=t.match(/^Geopolitical events in (\w+) (\d{4}) →$/)){const n=MON.indexOf(m[1])+1; if(n) return ko()?`${m[2]}년 ${n}월의 지정학적 사건 →`:`${m[2]}年${n}月の地政学的出来事 →`;}
+  if(m=t.match(/^(January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})$/)){const n=MON.indexOf(m[1])+1; return ko()?`${m[2]}년 ${n}월`:`${m[2]}年${n}月`;}
+  if(m=t.match(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) — (\d+) missiles? on (\d+) occasions?$/)){const n=MS.indexOf(m[1])+1;
+    return ko()?`${m[2]}년 ${n}월 — 미사일 ${m[3]}발, 발사 ${m[4]}회`:`${m[2]}年${n}月 — ミサイル${m[3]}発、${m[4]}回`;}
+  if(m=t.match(/^(\d+)(?:st|nd|rd|th) busiest year by missiles fired, of the (\d+) years with launches on record\. Click a month to jump to it\.$/)){
+    return ko()?`발사 기록이 있는 ${m[2]}개 연도 중 미사일 발사 수가 ${+m[1]===1?"가장 많은":m[1]+"번째로 많은"} 해임. 월을 클릭하면 해당 월로 이동함.`
+      :`発射記録のある${m[2]}年のうち、発射ミサイル数は${+m[1]===1?"最も多い":m[1]+"番目に多い"}年だ。月をクリックするとその月へ移動する。`;}
+  if(m=t.match(/^No launches are recorded for (\d{4})\. Pick another year on the timeline\.$/))
+    return ko()?`${m[1]}년에는 발사 기록 없음. 타임라인에서 다른 해 선택.`:`${m[1]}年の発射記録はない。タイムラインで別の年を選択。`;
+  if(m=t.match(/^most in one day · (.+)$/)) return (ko()?"하루 최대 · ":"1日の最多 · ")+m[1];
+  if(m=t.match(/^(\d{4}) in context$/)) return ko()?`${m[1]}년의 주요 사건`:`${m[1]}年の主な出来事`;
+  if(m=t.match(/^(.+) · (Japanese|Korean|UN News)$/)) return m[1]+" · "+XD[m[2]][i];
+  if(m=t.match(/^UN Security Council resolution (\d+) \((\d{4})\)$/)) return ko()?`유엔 안보리 결의 ${m[1]}호 (${m[2]}년)`:`国連安保理決議${m[1]}号（${m[2]}年）`;
+  if(m=t.match(/^official verdict, Japan's Ministry of Defense — (.+)$/)) return (ko()?"공식 판정(일본 방위성) — ":"公式判定（日本防衛省）— ")+tr(m[1]);
+  if(m=t.match(/^Kim (Il Sung|Jong Il|Jong Un)( → Kim (Il Sung|Jong Il|Jong Un))?$/)){
+    const f=n=>typeof TPK==="function"?TPK("Kim "+n):n; return f(m[1])+(m[3]?" → "+f(m[3]):"");}
+  if(m=t.match(/^North Korea:$/)) return ko()?"북한:":"北朝鮮：";
+  if(t==="Japan, South Korea, the United States and the UN Security Council:") return ko()?"일본·남한·미국·유엔 안보리:":"日本・韓国・米国・国連安保理：";
+  return t;
+}
+const roots=["paneDetail","paneList","paneStats","paneCtx"].map(id=>document.getElementById(id)).filter(Boolean);
+let busy=false;
+function run(){
+  if(LANG==="en"||busy) return; busy=true; obs.disconnect();
+  try{ roots.forEach(r=>{const w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT);let n;
+    while(n=w.nextNode()){const raw=n.nodeValue, t=raw.trim(); if(!t||!/[A-Za-z]/.test(t)) continue;
+      const o=tr(t); if(o!==t) n.nodeValue=raw.replace(t,()=>o);} }); }
+  finally{ obs.observe_all(); busy=false; }
+}
+const obs=new MutationObserver(()=>run());
+obs.observe_all=()=>roots.forEach(r=>obs.observe(r,{childList:true,subtree:true,characterData:true}));
+obs.observe_all();
+window.__l10nRun=run; run();
+})();
 </script>
 </body>
 </html>
